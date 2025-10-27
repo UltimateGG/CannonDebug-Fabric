@@ -25,63 +25,54 @@
 
 package org.originmc.cannondebug.cmd;
 
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
-import com.sk89q.worldedit.bukkit.selections.Selection;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.originmc.cannondebug.CannonDebugPlugin;
-import org.originmc.cannondebug.utils.NumberUtils;
 
-import static org.bukkit.ChatColor.GRAY;
-import static org.bukkit.ChatColor.RED;
-import static org.bukkit.ChatColor.YELLOW;
+import org.originmc.cannondebug.CannonDebugPlugin;
+import net.minecraft.server.command.ServerCommandSource;
+
 
 public final class CmdRegion extends CommandExecutor {
 
-    public CmdRegion(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
+    public CmdRegion(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
     @Override
     public boolean perform() {
-        // Do nothing if WorldEdit is not installed.
-        Plugin plugin = this.plugin.getServer().getPluginManager().getPlugin("WorldEdit");
-        if (plugin == null) {
-            sender.sendMessage(RED + "WorldEdit was not found on this server!");
-            return true;
-        }
-
-        // Do nothing if selection is not a cuboid.
-        WorldEditPlugin worldEdit = (WorldEditPlugin) plugin;
-        Selection selection = worldEdit.getSelection((Player) sender);
-        if (!(selection instanceof CuboidSelection)) {
-            sender.sendMessage(RED + "Region selected must be a cuboid!");
-            return true;
-        }
-
-        // Do nothing if selection is too large.
-        int maxArea = NumberUtils.getNumericalPerm(sender, "cannondebug.maxarea.");
-        if (selection.getArea() > maxArea) {
-            sender.sendMessage(String.format(RED + "Region selected is too large! " + GRAY + "(Max area = %s blocks)", maxArea));
-            return true;
-        }
-
-        // Handle selection for all blocks within this region.
-        Location max = selection.getMaximumPoint();
-        Location min = selection.getMinimumPoint();
-        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    this.plugin.handleSelection(user, max.getWorld().getBlockAt(x, y, z));
-                }
-            }
-        }
-
-        // Send complete message.
-        sender.sendMessage(YELLOW + "All possible selections have been toggled.");
+//        // Do nothing if WorldEdit is not installed.
+//        Plugin plugin = this.plugin.getServer().getPluginManager().getPlugin("WorldEdit");
+//        if (plugin == null) {
+//            sender.sendMessage(RED + "WorldEdit was not found on this server!");
+//            return true;
+//        }
+//
+//        // Do nothing if selection is not a cuboid.
+//        WorldEditPlugin worldEdit = (WorldEditPlugin) plugin;
+//        Selection selection = worldEdit.getSelection((Player) sender);
+//        if (!(selection instanceof CuboidSelection)) {
+//            sender.sendMessage(RED + "Region selected must be a cuboid!");
+//            return true;
+//        }
+//
+//        // Do nothing if selection is too large.
+//        int maxArea = NumberUtils.getNumericalPerm(sender, "cannondebug.maxarea.");
+//        if (selection.getArea() > maxArea) {
+//            sender.sendMessage(String.format(RED + "Region selected is too large! " + GRAY + "(Max area = %s blocks)", maxArea));
+//            return true;
+//        }
+//
+//        // Handle selection for all blocks within this region.
+//        Location max = selection.getMaximumPoint();
+//        Location min = selection.getMinimumPoint();
+//        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+//            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+//                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+//                    this.plugin.handleSelection(user, max.getWorld().getBlockAt(x, y, z));
+//                }
+//            }
+//        }
+//
+//        // Send complete message.
+//        sender.sendMessage(YELLOW + "All possible selections have been toggled.");
         return true;
     }
 

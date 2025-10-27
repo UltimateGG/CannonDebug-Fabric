@@ -25,84 +25,85 @@
 
 package org.originmc.cannondebug.cmd;
 
-import mkremins.fanciful.FancyMessage;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
+import net.minecraft.server.command.ServerCommandSource;
 import org.originmc.cannondebug.BlockSelection;
 import org.originmc.cannondebug.CannonDebugPlugin;
 import org.originmc.cannondebug.EntityTracker;
 import org.originmc.cannondebug.FancyPager;
-import org.originmc.cannondebug.utils.EnumUtils;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.bukkit.ChatColor.*;
+import static net.minecraft.text.ClickEvent.Action.RUN_COMMAND;
+import static net.minecraft.text.HoverEvent.Action.SHOW_TEXT;
+
 
 public final class CmdHistoryAll extends CommandExecutor {
 
-    public CmdHistoryAll(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
+    public CmdHistoryAll(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
     @Override
     public boolean perform() {
         // Generate fancy message lines for all new message data.
-        List<FancyMessage> lines = new ArrayList<>();
+        List<Text> lines = new ArrayList<>();
         for (BlockSelection selection : user.getSelections()) {
             // Do nothing if tracker has not been spawned for this selection yet.
             EntityTracker tracker = selection.getTracker();
             if (tracker == null) continue;
 
             // Generate a new fancy message line to add to the pager.
-            Location initial = tracker.getLocationHistory().get(0);
-            Location latest = tracker.getLocationHistory().get(tracker.getLocationHistory().size() - 1);
-            lines.add(new FancyMessage("ID: " + selection.getId() + " ")
-                            .color(GRAY)
-                            .formattedTooltip(
-                                    new FancyMessage("Click for all history on this ID.")
-                                            .color(DARK_AQUA)
-                                            .style(BOLD),
+            Vec3d initial = tracker.getLocationHistory().get(0);
+            Vec3d latest = tracker.getLocationHistory().get(tracker.getLocationHistory().size() - 1);
+            // === Build hover tooltip ===
+            Text tooltip = Text.empty()
+                    .append(Text.literal("Click for all history on this ID.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
+                    .append(Text.literal("Spawned tick: ").formatted(Formatting.YELLOW))
+                    .append(Text.literal(String.valueOf(tracker.getSpawnTick())).formatted(Formatting.AQUA))
+                    .append(Text.literal("\nDeath tick: ").formatted(Formatting.YELLOW))
+                    .append(Text.literal(
+                            tracker.getDeathTick() == -1 ? "Still alive" : String.valueOf(tracker.getDeathTick())
+                    ).formatted(Formatting.RED))
+                    .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
+                    .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
+                    .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
+                    .append(Text.literal(Math.floor(initial.getX()) + " " + Math.floor(initial.getY()) + " " + Math.floor(initial.getZ()))
+                            .formatted(Formatting.GRAY));
 
-                                    new FancyMessage("Spawned tick: ")
-                                            .color(YELLOW)
-                                            .then("" + tracker.getSpawnTick())
-                                            .color(AQUA),
+            // === Build main clickable line ===
+            Text line = Text.literal("ID: " + selection.getId() + " ")
+                    .formatted(Formatting.GRAY)
+                    .styled(s -> s
+                            .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug h i " + selection.getId()))
+                            .withHoverEvent(new HoverEvent(SHOW_TEXT, tooltip))
+                    )
 
-                                    new FancyMessage("Death tick: ")
-                                            .color(YELLOW)
-                                            .then((tracker.getDeathTick() == -1 ? "Still alive" : "" + tracker.getDeathTick()))
-                                            .color(RED),
+                    // Entity name
+                    .append(tracker.getEntityType().getName().copy()
+                            .formatted(Formatting.YELLOW))
 
-                                    new FancyMessage("Cached tick: ")
-                                            .color(YELLOW)
-                                            .then("" + plugin.getCurrentTick())
-                                            .color(GREEN),
+                    // Separator
+                    .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
 
-                                    new FancyMessage("Initial Location: ")
-                                            .color(YELLOW)
-                                            .then(initial.getBlockX() + " " + initial.getBlockY() + " " + initial.getBlockZ())
-                                            .color(GRAY)
-                            )
+                    // Label
+                    .append(Text.literal("Last location: ").formatted(Formatting.WHITE))
 
-                            .command("/cannondebug h i " + selection.getId())
+                    // Coordinates
+                    .append(Text.literal(
+                            Math.floor(latest.getX()) + " " + Math.floor(latest.getY()) + " " + Math.floor(latest.getZ())
+                    ).formatted(Formatting.RED));
 
-                            .then(EnumUtils.getFriendlyName(tracker.getEntityType()))
-                            .color(YELLOW)
-
-                            .then(" | ")
-                            .color(DARK_GRAY)
-
-                            .then("Last location: ")
-                            .color(WHITE)
-
-                            .then(latest.getBlockX() + " " + latest.getBlockY() + " " + latest.getBlockZ())
-                            .color(RED)
-            );
+            lines.add(line);
         }
 
-        // Send user the pager messages.
-        FancyPager pager = new FancyPager("All Latest History", lines.toArray(new FancyMessage[lines.size()]));
+        // === Create the pager ===
+        FancyPager pager = new FancyPager("All Latest History", lines.toArray(Text[]::new));
         send(pager, 0);
         return true;
     }

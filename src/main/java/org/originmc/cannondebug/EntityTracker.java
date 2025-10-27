@@ -25,28 +25,62 @@
 
 package org.originmc.cannondebug;
 
-import lombok.Data;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.util.Vector;
-
 import java.util.ArrayList;
-import java.util.List;
 
-@Data
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.util.math.Vec3d;
+
 public final class EntityTracker {
-
-    private final EntityType entityType;
+    private final EntityType<?> entityType;
 
     private final long spawnTick;
 
-    private final List<Location> locationHistory = new ArrayList<>();
+    private final ArrayList<Vec3d> locationHistory;
 
-    private final List<Vector> velocityHistory = new ArrayList<>();
+    private final ArrayList<Vec3d> velocityHistory;
 
-    private long deathTick = -1;
+    private long deathTick;
 
     private Entity entity;
 
+    public EntityTracker(EntityType<?> entityType, long spawnTick) {
+        this.locationHistory = new ArrayList<>();
+        this.velocityHistory = new ArrayList<>();
+        this.deathTick = -1L;
+        this.entityType = entityType;
+        this.spawnTick = spawnTick;
+    }
+
+    public void setDeathTick(long deathTick) {
+        this.deathTick = deathTick;
+    }
+
+    public void setEntity(Entity entity) {
+        this.entity = entity;
+    }
+
+    public EntityType<?> getEntityType() {
+        return this.entityType;
+    }
+
+    public long getSpawnTick() {
+        return this.spawnTick;
+    }
+
+    public ArrayList<Vec3d> getLocationHistory() {
+        return this.locationHistory;
+    }
+
+    public ArrayList<Vec3d> getVelocityHistory() {
+        return this.velocityHistory;
+    }
+
+    public long getDeathTick() {
+        return this.deathTick;
+    }
+
+    public Entity getEntity() {
+        return this.entity;
+    }
 }

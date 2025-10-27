@@ -25,17 +25,14 @@
 
 package org.originmc.cannondebug.cmd;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.originmc.cannondebug.BlockSelection;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.originmc.cannondebug.CannonDebugPlugin;
 
 public final class CmdPreview extends CommandExecutor {
 
-    public CmdPreview(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
+    public CmdPreview(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
@@ -60,18 +57,18 @@ public final class CmdPreview extends CommandExecutor {
     }
 
     private void previewOn() {
-        for (BlockSelection selection : user.getSelections()) {
-            ((Player) sender).sendBlockChange(selection.getLocation(), Material.EMERALD_BLOCK, (byte) 0);
-        }
-        sender.sendMessage(ChatColor.YELLOW + "Preview mode now enabled.");
+//        for (BlockSelection selection : user.getSelections()) {
+//            ((Player) sender).sendBlockChange(selection.getLocation(), Material.EMERALD_BLOCK, (byte) 0);
+//        }
+        sender.sendMessage(Text.literal("Preview mode now enabled.").formatted(Formatting.YELLOW));
     }
 
     private void previewOff() {
-        for (BlockSelection selection : user.getSelections()) {
-            Block block = selection.getLocation().getBlock();
-            ((Player) sender).sendBlockChange(selection.getLocation(), block.getType(), block.getData());
-        }
-        sender.sendMessage(ChatColor.YELLOW + "Preview mode now disabled.");
+//        for (BlockSelection selection : user.getSelections()) {
+//            Block block = selection.getLocation().getBlock();
+//            ((Player) sender).sendBlockChange(selection.getLocation(), block.getType(), block.getData());
+//        }
+        sender.sendMessage(Text.literal("Preview mode now disabled.").formatted(Formatting.YELLOW));
     }
 
 }

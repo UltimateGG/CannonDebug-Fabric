@@ -25,35 +25,51 @@
 
 package org.originmc.cannondebug.cmd;
 
-import mkremins.fanciful.FancyMessage;
-import org.bukkit.command.CommandSender;
-import org.originmc.cannondebug.CannonDebugPlugin;
 import org.originmc.cannondebug.FancyPager;
-
-import static org.bukkit.ChatColor.*;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import org.originmc.cannondebug.CannonDebugPlugin;
 
 public final class CmdHelp extends CommandExecutor {
 
-    private static final FancyPager HELP_PAGER = new FancyPager("Help for command \"/c\"", new FancyMessage[]{
-            new FancyMessage("/c c,clear ").color(AQUA).then("[history,h,selections,s] ").color(DARK_AQUA).then("Clear history or selections.").color(YELLOW),
-            new FancyMessage("/c ?,help ").color(AQUA).then("Displays this plugins' main help page.").color(YELLOW),
-            new FancyMessage("/c h,l,history,lookup ").color(AQUA).then("[?,params] ").color(DARK_AQUA).then("Lists latest profiling history.").color(YELLOW),
-            new FancyMessage("/c p,page ").color(AQUA).then("[page] ").color(DARK_AQUA).then("Go to specific page for current pager.").color(YELLOW),
-            new FancyMessage("/c v,pre,view,preview ").color(AQUA).then("Preview all selected blocks.").color(YELLOW),
-            new FancyMessage("/c r,region ").color(AQUA).then("Select all available blocks in WorldEdit region.").color(YELLOW),
-            new FancyMessage("/c s,select ").color(AQUA).then("Bind block selector tool to hand.").color(YELLOW),
-            new FancyMessage(""),
-            new FancyMessage("This plugin was made with the intentions of providing an easy to use method of profiling cannons.").color(GREEN),
-            new FancyMessage(""),
-            new FancyMessage("To accomplish this, this plugin will grant you the ability to select either blocks of " +
-                    "sand or dispensers around your cannon. The entities that are either shot or falling forms of " +
-                    "their previous block states will be profiled every tick.").color(GREEN),
-            new FancyMessage(""),
-            new FancyMessage("All information such as velocities and locations tracked by the plugin can then be accessed " +
-                    "via lookup commands. Profiling information is then indexed, to be clear and easy to use.").color(GREEN)
-    });
+    private static final FancyPager HELP_PAGER = new FancyPager(
+            "Help for command \"/c\"",
+            Text.literal("/c c,clear ").formatted(Formatting.AQUA)
+                    .append(Text.literal("[history,h,selections,s] ").formatted(Formatting.DARK_AQUA))
+                    .append(Text.literal("Clear history or selections.").formatted(Formatting.YELLOW)),
 
-    public CmdHelp(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
+            Text.literal("/c ?,help ").formatted(Formatting.AQUA)
+                    .append(Text.literal("Displays this plugin's main help page.").formatted(Formatting.YELLOW)),
+
+            Text.literal("/c h,l,history,lookup ").formatted(Formatting.AQUA)
+                    .append(Text.literal("[?,params] ").formatted(Formatting.DARK_AQUA))
+                    .append(Text.literal("Lists latest profiling history.").formatted(Formatting.YELLOW)),
+
+            Text.literal("/c p,page ").formatted(Formatting.AQUA)
+                    .append(Text.literal("[page] ").formatted(Formatting.DARK_AQUA))
+                    .append(Text.literal("Go to specific page for current pager.").formatted(Formatting.YELLOW)),
+
+            Text.literal("/c v,pre,view,preview ").formatted(Formatting.AQUA)
+                    .append(Text.literal("Preview all selected blocks.").formatted(Formatting.YELLOW)),
+
+            Text.literal("/c r,region ").formatted(Formatting.AQUA)
+                    .append(Text.literal("Select all available blocks in WorldEdit region.").formatted(Formatting.YELLOW)),
+
+            Text.literal("/c s,select ").formatted(Formatting.AQUA)
+                    .append(Text.literal("Bind block selector tool to hand.").formatted(Formatting.YELLOW)),
+
+            Text.empty(),
+            Text.literal("This mod provides an easy way to profile cannons.").formatted(Formatting.GREEN),
+            Text.empty(),
+            Text.literal("It lets you select sand or dispensers around your cannon. The falling or fired entities are profiled each tick.")
+                    .formatted(Formatting.GREEN),
+            Text.empty(),
+            Text.literal("All data like velocities and locations can be accessed via lookup commands. The results are indexed for clarity.")
+                    .formatted(Formatting.GREEN)
+    );
+
+    public CmdHelp(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 

@@ -25,16 +25,35 @@
 
 package org.originmc.cannondebug;
 
-import lombok.Data;
-import org.bukkit.Location;
+import net.minecraft.util.math.BlockPos;
 
-@Data
+
 public final class BlockSelection {
-
     private final int id;
 
-    private final Location location;
+    private final BlockPos location;
 
-    private EntityTracker tracker = null;
+    private EntityTracker tracker;
 
+    public BlockSelection(int id, BlockPos location) {
+        this.tracker = null;
+        this.id = id;
+        this.location = location;
+    }
+
+    public void setTracker(EntityTracker tracker) {
+        this.tracker = tracker;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public BlockPos getLocation() {
+        return this.location;
+    }
+
+    public EntityTracker getTracker() {
+        return this.tracker;
+    }
 }

@@ -25,16 +25,15 @@
 
 package org.originmc.cannondebug.cmd;
 
-import org.bukkit.ChatColor;
-import org.bukkit.block.Block;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.originmc.cannondebug.BlockSelection;
 import org.originmc.cannondebug.CannonDebugPlugin;
 
 public final class CmdClear extends CommandExecutor {
 
-    public CmdClear(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
+    public CmdClear(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
@@ -51,25 +50,25 @@ public final class CmdClear extends CommandExecutor {
             }
 
             // Send confirmation message.
-            sender.sendMessage(ChatColor.YELLOW + "History has been cleared.");
+            sender.sendMessage(Text.literal("History has been cleared.").formatted(Formatting.YELLOW));
             return true;
         }
 
         // Check if user wishes to delete selections.
         if (args[1].toLowerCase().startsWith("s")) {
             // Update the users preview if they have preview mode toggled.
-            if (user.isPreviewing()) {
-                for (BlockSelection selection : user.getSelections()) {
-                    Block block = selection.getLocation().getBlock();
-                    ((Player) sender).sendBlockChange(block.getLocation(), block.getType(), block.getData());
-                }
-            }
+//            if (user.isPreviewing()) {
+//                for (BlockSelection selection : user.getSelections()) {
+//                    Block block = selection.getLocation().getBlock();
+//                    sender.getPlayer().sendBlockChange(block.getLocation(), block.getType(), block.getData());
+//                }
+//            }
 
             // Delete users selections.
             user.getSelections().clear();
 
             // Send confirmation message.
-            sender.sendMessage(ChatColor.YELLOW + "Selections have been cleared.");
+            sender.sendMessage(Text.literal("Selections have been cleared.").formatted(Formatting.YELLOW));
             return true;
         }
         return false;

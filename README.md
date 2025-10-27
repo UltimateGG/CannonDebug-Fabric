@@ -1,11 +1,13 @@
 # CannonDebug
 
+1.20 Fabric port of the CannonDebug plugin, now with 0 dependencies.
+
 *Best cannon debugger out there!*
 
 ## Supports
 
-* WorldEdit 5.x -> 6.x
-* CraftBukkit & Spigot 1.7.9 -> 1.8.8
+* ~~WorldEdit 5.x -> 6.x~~ TODO
+* Fabric 1.20.1 (Loader 0.17.3)
 
 ## Features
 
@@ -24,12 +26,12 @@
 
 ## Download
 
-[Obtain the latest compiled version of CannonDebug here](https://github.com/OriginFactions/CannonDebug/raw/master/target/CannonDebug.jar)
+[Obtain the latest compiled version of CannonDebug here](https://github.com/UltimateGG/CannonDebug-Fabric/raw/master/target/CannonDebug.jar)
 
 ## Installation
 
 1. Download file to your computer
-2. Drag and drop CannonDebug.jar to plugins folder in server
+2. Drag and drop CannonDebug.jar to mods folder in server
 3. Restart your server
 
 ## Permissions

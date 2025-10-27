@@ -25,13 +25,14 @@
 
 package org.originmc.cannondebug.cmd;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.originmc.cannondebug.CannonDebugPlugin;
 
 public final class CmdSelect extends CommandExecutor {
 
-    public CmdSelect(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
+    public CmdSelect(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
@@ -39,12 +40,12 @@ public final class CmdSelect extends CommandExecutor {
     public boolean perform() {
         if (!user.isSelecting()) {
             user.setSelecting(true);
-            sender.sendMessage(ChatColor.YELLOW + "Selection mode now enabled. Right click blocks to add, left click to remove.");
+            sender.sendMessage(Text.literal("Selection mode now enabled. Right click blocks to add, left click to remove.").formatted(Formatting.YELLOW));
             return true;
         }
 
         user.setSelecting(false);
-        sender.sendMessage(ChatColor.YELLOW + "Selection mode now disabled.");
+        sender.sendMessage(Text.literal("Selection mode now disabled.").formatted(Formatting.YELLOW));
         return true;
     }
 

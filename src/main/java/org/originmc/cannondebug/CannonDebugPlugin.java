@@ -25,16 +25,20 @@
 
 package org.originmc.cannondebug;
 
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
 import org.originmc.cannondebug.cmd.CommandType;
 import org.originmc.cannondebug.listener.PlayerListener;
 import org.originmc.cannondebug.listener.WorldListener;
-import org.originmc.cannondebug.utils.EnumUtils;
 import org.originmc.cannondebug.utils.MaterialUtils;
 import org.originmc.cannondebug.utils.NumberUtils;
 
@@ -45,13 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.bukkit.ChatColor.BOLD;
-import static org.bukkit.ChatColor.GRAY;
-import static org.bukkit.ChatColor.GREEN;
-import static org.bukkit.ChatColor.RED;
-import static org.bukkit.ChatColor.WHITE;
-
-public final class CannonDebugPlugin extends JavaPlugin implements Runnable {
+public final class CannonDebugPlugin {
 
     private final Map<UUID, User> users = new HashMap<>();
 
@@ -83,30 +81,54 @@ public final class CannonDebugPlugin extends JavaPlugin implements Runnable {
         this.currentTick = currentTick;
     }
 
-    @Override
-    public void onEnable() {
-        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        getServer().getPluginManager().registerEvents(new WorldListener(this), this);
-        getServer().getScheduler().runTaskTimer(this, this, 1, 1);
+    public void init() {
+        new PlayerListener(this);
+        new WorldListener(this);
+
+        ServerTickEvents.END_SERVER_TICK.register(server -> onServerTick());
+
+        CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
+            dispatcher.register(
+                    CommandManager.literal("c")
+                            .executes(ctx -> runLegacyCommand(ctx.getSource(), "c", new String[0]))
+                            .then(CommandManager.argument("args", StringArgumentType.greedyString())
+                                    .executes(ctx -> {
+                                        String allArgs = StringArgumentType.getString(ctx, "args");
+                                        String[] splitArgs = allArgs.split(" ");
+                                        return runLegacyCommand(ctx.getSource(), "c", splitArgs);
+                                    })
+                            )
+            );
+            dispatcher.register(
+                    CommandManager.literal("cannondebug")
+                            .executes(ctx -> runLegacyCommand(ctx.getSource(), "c", new String[0]))
+                            .then(CommandManager.argument("args", StringArgumentType.greedyString())
+                                    .executes(ctx -> {
+                                        String allArgs = StringArgumentType.getString(ctx, "args");
+                                        String[] splitArgs = allArgs.split(" ");
+                                        return runLegacyCommand(ctx.getSource(), "c", splitArgs);
+                                    })
+                            )
+            );
+        }));
 
         // Load user profiles.
-        for (Player player : getServer().getOnlinePlayers()) {
-            users.put(player.getUniqueId(), new User(player));
-        }
+//        for (Player player : getServer().getOnlinePlayers()) {
+//            users.put(player.getUniqueId(), new User(player));
+//        }
     }
 
-    @Override
-    public void run() {
+    public void onServerTick() {
         // Loop through every active tracker.
         Iterator<EntityTracker> iterator = activeTrackers.iterator();
         while (iterator.hasNext()) {
             // Add new location and velocity to the tracker histories.
             EntityTracker tracker = iterator.next();
-            tracker.getLocationHistory().add(tracker.getEntity().getLocation());
+            tracker.getLocationHistory().add(tracker.getEntity().getPos());
             tracker.getVelocityHistory().add(tracker.getEntity().getVelocity());
 
             // Remove dead entities from tracker.
-            if (tracker.getEntity().isDead()) {
+            if (tracker.getEntity().isRemoved()) {
                 tracker.setDeathTick(currentTick);
                 tracker.setEntity(null);
                 iterator.remove();
@@ -117,9 +139,13 @@ public final class CannonDebugPlugin extends JavaPlugin implements Runnable {
         currentTick++;
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-        return CommandType.fromCommand(this, sender, args).execute();
+    public int runLegacyCommand(ServerCommandSource sender, String commandLabel, String[] args) {
+        boolean success = CommandType.fromCommand(this, sender, args).execute();
+
+        if (!success)
+            sender.sendMessage(Text.literal("Incorrect syntax. For help use /cannondebug").formatted(Formatting.RED));
+
+        return success ? 1 : 0;
     }
 
     /**
@@ -129,48 +155,62 @@ public final class CannonDebugPlugin extends JavaPlugin implements Runnable {
      * @param user  the user that is adding to their selection.
      * @param block the block to select.
      */
-    public void handleSelection(User user, Block block) {
+    public void handleSelection(User user, BlockPos pos, BlockState block, MinecraftServer server) {
         // Do nothing if not a selectable block.
-        if (!MaterialUtils.isSelectable(block.getType())) return;
+        if (!MaterialUtils.isSelectable(block.getBlock())) return;
 
         // Attempt to deselect block if it is already selected.
-        BlockSelection selection = user.getSelection(block.getLocation());
-        Player player = user.getBase();
+        BlockSelection selection = user.getSelection(pos);
+        PlayerEntity player = user.getPlayer();
         if (selection != null) {
             // Inform the player.
-            player.sendMessage(String.format(RED + "" + BOLD + "REM " + WHITE + "%m @ %x %y %z " + GRAY + "ID: %i",
-                    EnumUtils.getFriendlyName(block.getType()), block.getX(), block.getY(), block.getZ(), selection.getId()));
+            player.sendMessage(Text.empty()
+                    .append(Text.literal("REM ").formatted(Formatting.RED, Formatting.BOLD))
+                    .append(Text.literal(block.getBlock().getName().getString() + " @ ").formatted(Formatting.WHITE))
+                    .append(Text.literal(pos.getX() + " " + pos.getY() + " " + pos.getZ() + " ").formatted(Formatting.WHITE))
+                    .append(Text.literal("ID: " + selection.getId()).formatted(Formatting.GRAY))
+            );
 
             // Remove the clicked location.
             user.getSelections().remove(selection);
 
             // Update users preview.
-            if (user.isPreviewing()) {
-                getServer().getScheduler().runTask(this, () ->
-                        player.sendBlockChange(block.getLocation(), block.getType(), block.getData()));
-            }
+//            if (user.isPreviewing()) {
+//                server.execute(() -> {
+//                    player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
+//                });
+//            }
             return;
         }
 
         // Do nothing if the user has too many selections.
-        int max = NumberUtils.getNumericalPerm(player, "cannondebug.maxselections.");
+        int max = NumberUtils.getNumericalPerm(player.getCommandSource(), "cannondebug.maxselections.");
         if (user.getSelections().size() >= max) {
-            player.sendMessage(String.format(RED + "You have too many selections! " + GRAY + "(Max = %s)", max));
+            player.sendMessage(
+                    Text.literal("You have too many selections! ")
+                            .formatted(Formatting.RED)
+                            .append(Text.literal("(Max = " + max + ")").formatted(Formatting.GRAY))
+            );
             return;
         }
 
         // Update users preview.
-        if (user.isPreviewing()) {
-            getServer().getScheduler().runTask(this, () ->
-                    player.sendBlockChange(block.getLocation(), Material.EMERALD_BLOCK, (byte) 0));
-        }
+//        if (user.isPreviewing()) {
+//            server.execute(() -> {
+//                player.sendBlockChange(block.getLocation(), Material.EMERALD_BLOCK, (byte) 0);
+//            });
+//        }
 
         // Add the selected location.
-        selection = user.addSelection(block.getLocation());
+        selection = user.addSelection(pos);
 
         // Inform the player.
-        player.sendMessage(String.format(GREEN + "" + BOLD + "ADD " + WHITE + "%s @ %s %s %s " + GRAY + "ID: %s",
-                EnumUtils.getFriendlyName(block.getType()), block.getX(), block.getY(), block.getZ(), selection.getId()));
+        player.sendMessage(Text.empty()
+                .append(Text.literal("ADD ").formatted(Formatting.GREEN, Formatting.BOLD))
+                .append(Text.literal(block.getBlock().getName().getString() + " @ ").formatted(Formatting.WHITE))
+                .append(Text.literal(pos.getX() + " " + pos.getY() + " " + pos.getZ() + " ").formatted(Formatting.WHITE))
+                .append(Text.literal("ID: " + selection.getId()).formatted(Formatting.GRAY))
+        );
     }
 
 }

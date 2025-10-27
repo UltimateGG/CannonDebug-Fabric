@@ -1,64 +1,60 @@
 package org.originmc.cannondebug.listener;
 
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.TNTPrimed;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockDispenseEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.material.Dispenser;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.dispenser.ItemDispenserBehavior;
+import net.minecraft.entity.TntEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPointer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.event.GameEvent;
 import org.originmc.cannondebug.BlockSelection;
 import org.originmc.cannondebug.CannonDebugPlugin;
 import org.originmc.cannondebug.EntityTracker;
 import org.originmc.cannondebug.User;
 
-import static org.originmc.cannondebug.utils.MaterialUtils.isDispenser;
-import static org.originmc.cannondebug.utils.MaterialUtils.isExplosives;
-import static org.originmc.cannondebug.utils.MaterialUtils.isStacker;
 
-public class WorldListener implements Listener {
+public class WorldListener {
 
     private final CannonDebugPlugin plugin;
 
     public WorldListener(CannonDebugPlugin plugin) {
         this.plugin = plugin;
+
+        DispenserBlock.registerBehavior(Blocks.TNT, new ItemDispenserBehavior() {
+            @Override
+            protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+                ServerWorld world = pointer.getWorld();
+                BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+                TntEntity tntEntity = new TntEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
+                onTNTDispensed(pointer.getPos(), tntEntity);
+                world.spawnEntity(tntEntity);
+                world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.emitGameEvent(null, GameEvent.ENTITY_PLACE, blockPos);
+                stack.decrement(1);
+                return stack;
+            }
+        });
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void startProfiling(BlockDispenseEvent event) {
-        // Do nothing if block is not a dispenser.
-        Block block = event.getBlock();
-        if (!isDispenser(block.getType())) return;
-
-        // Do nothing if not shot TNT.
-        if (!isExplosives(event.getItem().getType())) return;
-
+    private void onTNTDispensed(BlockPos dispenser, TntEntity entity) {
         // Loop through each user profile.
         BlockSelection selection;
         EntityTracker tracker = null;
         for (User user : plugin.getUsers().values()) {
             // Do nothing if user is not attempting to profile current block.
-            selection = user.getSelection(block.getLocation());
+            selection = user.getSelection(dispenser);
             if (selection == null) {
                 continue;
             }
 
             // Build a new tracker due to it being used.
             if (tracker == null) {
-                // Cancel the event.
-                event.setCancelled(true);
-
-                // Shoot a new falling block with the exact same properties as current.
-                BlockFace face = ((Dispenser) block.getState().getData()).getFacing();
-                Location location = block.getLocation().clone();
-                location.add(face.getModX() + 0.5, face.getModY(), face.getModZ() + 0.5);
-                TNTPrimed tnt = block.getWorld().spawn(location, TNTPrimed.class);
-                tracker = new EntityTracker(tnt.getType(), plugin.getCurrentTick());
-                tracker.setEntity(tnt);
+                tracker = new EntityTracker(entity.getType(), plugin.getCurrentTick());
+                tracker.setEntity(entity);
                 plugin.getActiveTrackers().add(tracker);
             }
 
@@ -67,7 +63,7 @@ public class WorldListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void startProfiling(EntityChangeBlockEvent event) {
         // Do nothing if the material is not used for stacking in cannons.
         Block block = event.getBlock();
@@ -96,6 +92,5 @@ public class WorldListener implements Listener {
             // Add block tracker to user.
             selection.setTracker(tracker);
         }
-    }
-
+    }*/
 }

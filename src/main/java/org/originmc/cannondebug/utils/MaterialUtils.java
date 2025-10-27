@@ -25,7 +25,7 @@
 
 package org.originmc.cannondebug.utils;
 
-import org.bukkit.Material;
+import net.minecraft.block.*;
 
 public final class MaterialUtils {
 
@@ -33,44 +33,33 @@ public final class MaterialUtils {
      * Identifies whether or not a material is used for dispensing tnt in tnt
      * cannons.
      *
-     * @param material the material to identify.
+     * @param block the material to identify.
      * @return true if material is used for dispensing.
      */
-    public static boolean isDispenser(Material material) {
-        return material == Material.DISPENSER;
-    }
-
-    /**
-     * Identifies whether or not a material is used as explosives with tnt
-     * cannons.
-     *
-     * @param material the material to identify.
-     * @return true if material is used as explosives.
-     */
-    public static boolean isExplosives(Material material) {
-        return material == Material.TNT;
+    public static boolean isDispenser(Block block) {
+        return block instanceof DispenserBlock;
     }
 
     /**
      * Identifies whether or not a material is used for stacking with tnt
      * cannons.
      *
-     * @param material the material to identify.
+     * @param block the material to identify.
      * @return true if material is used for stacking.
      */
-    public static boolean isStacker(Material material) {
-        return material == Material.SAND || material == Material.GRAVEL;
+    public static boolean isStacker(Block block) {
+        return block instanceof FallingBlock;
     }
 
     /**
      * Identifies whether or not a material can be selected using the block
      * selection mode.
      *
-     * @param material the material to identify.
+     * @param block the material to identify.
      * @return true if material can be selected.
      */
-    public static boolean isSelectable(Material material) {
-        return isStacker(material) || isDispenser(material);
+    public static boolean isSelectable(Block block) {
+        return isStacker(block) || isDispenser(block);
     }
 
 }

@@ -1,75 +1,78 @@
 package org.originmc.cannondebug.listener;
 
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.originmc.cannondebug.utils.MaterialUtils;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 import org.originmc.cannondebug.CannonDebugPlugin;
 import org.originmc.cannondebug.User;
 
-public class PlayerListener implements Listener {
+public class PlayerListener {
 
     private final CannonDebugPlugin plugin;
 
     public PlayerListener(CannonDebugPlugin plugin) {
         this.plugin = plugin;
+
+        ServerPlayConnectionEvents.JOIN.register(this::createUser);
+        ServerPlayConnectionEvents.DISCONNECT.register(this::deleteUser);
+        UseBlockCallback.EVENT.register(this::addSelection);
+        AttackBlockCallback.EVENT.register(this::removeSelection);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void createUser(PlayerJoinEvent event) {
-        plugin.getUsers().put(event.getPlayer().getUniqueId(), new User(event.getPlayer()));
+    public void createUser(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+        plugin.getUsers().put(handler.getPlayer().getUuid(), new User(handler.getPlayer()));
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void deleteUser(PlayerQuitEvent event) {
-        plugin.getUsers().remove(event.getPlayer().getUniqueId());
+    public void deleteUser(ServerPlayNetworkHandler handler, MinecraftServer server) {
+        plugin.getUsers().remove(handler.getPlayer().getUuid());
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void addSelection(PlayerInteractEvent event) {
-        // Do nothing if the player is not right clicking a block.
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+    public ActionResult addSelection(PlayerEntity player, World world, Hand hand, BlockHitResult blockHitResult) {
+        // Do nothing if not a selectable block.
+        if (!MaterialUtils.isSelectable(world.getBlockState(blockHitResult.getBlockPos()).getBlock())) return ActionResult.PASS;
 
         // Do nothing if the player has no user profile attached.
-        Player player = event.getPlayer();
-        User user = plugin.getUser(player.getUniqueId());
-        if (user == null) return;
+        User user = plugin.getUser(player.getUuid());
+        if (user == null) return ActionResult.PASS;
 
         // Do nothing if the user is not selecting.
-        if (!user.isSelecting()) return;
+        if (!user.isSelecting()) return ActionResult.PASS;
+
+        BlockState block = world.getBlockState(blockHitResult.getBlockPos());
+        plugin.handleSelection(user, blockHitResult.getBlockPos(), block, world.getServer());
 
         // Cancel the event.
-        event.setCancelled(true);
-
-        // Do nothing if the block is not selectable.
-        Block block = event.getClickedBlock();
-        plugin.handleSelection(user, block);
+        return ActionResult.SUCCESS;
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void removeSelection(PlayerInteractEvent event) {
-        // Do nothing if the player is not right clicking a block.
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
+    public ActionResult removeSelection(PlayerEntity player, World world, Hand hand, BlockPos blockPos, Direction direction) {
+        // Do nothing if not a selectable block.
+        if (!MaterialUtils.isSelectable(world.getBlockState(blockPos).getBlock())) return ActionResult.PASS;
 
         // Do nothing if the player has no user profile attached.
-        Player player = event.getPlayer();
-        User user = plugin.getUser(player.getUniqueId());
-        if (user == null) return;
+        User user = plugin.getUser(player.getUuid());
+        if (user == null) return ActionResult.PASS;
 
         // Do nothing if the user is not selecting.
-        if (!user.isSelecting()) return;
+        if (!user.isSelecting()) return ActionResult.PASS;
+
+        BlockState block = world.getBlockState(blockPos);
+        plugin.handleSelection(user, blockPos, block, world.getServer());
 
         // Cancel the event.
-        event.setCancelled(true);
-
-        // Do nothing if the block is not selectable.
-        Block block = event.getClickedBlock();
-        plugin.handleSelection(user, block);
+        return ActionResult.SUCCESS;
     }
 
 }

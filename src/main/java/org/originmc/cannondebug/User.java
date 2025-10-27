@@ -25,47 +25,81 @@
 
 package org.originmc.cannondebug;
 
-import lombok.Data;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
-import java.util.List;
 
-@Data
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
+
+
 public final class User {
+    private int id;
 
-    private final Player base;
+    private final PlayerEntity player;
 
-    private final List<BlockSelection> selections = new ArrayList<>();
-
-    private int id = 1;
+    private final ArrayList<BlockSelection> selections;
 
     private boolean selecting;
 
     private boolean previewing;
 
-    private FancyPager pager = FancyPager.DEFAULT;
+    private FancyPager pager;
+
+    public User(PlayerEntity player) {
+        this.id = 1;
+        this.selections = new ArrayList<>();
+        this.pager = FancyPager.DEFAULT;
+        this.player = player;
+    }
+
+    public void setSelecting(boolean selecting) {
+        this.selecting = selecting;
+    }
+
+    public void setPreviewing(boolean previewing) {
+        this.previewing = previewing;
+    }
+
+    public void setPager(FancyPager pager) {
+        this.pager = pager;
+    }
+
+    public PlayerEntity getPlayer() {
+        return this.player;
+    }
+
+    public ArrayList<BlockSelection> getSelections() {
+        return this.selections;
+    }
+
+    public boolean isSelecting() {
+        return this.selecting;
+    }
+
+    public boolean isPreviewing() {
+        return this.previewing;
+    }
+
+    public FancyPager getPager() {
+        return this.pager;
+    }
 
     public BlockSelection getSelection(int id) {
         for (BlockSelection selection : selections) {
-            if (selection.getId() == id) {
+            if (selection.getId() == id)
                 return selection;
-            }
         }
         return null;
     }
 
-    public BlockSelection getSelection(Location location) {
+    public BlockSelection getSelection(BlockPos location) {
         for (BlockSelection selection : selections) {
-            if (selection.getLocation().equals(location)) {
+            if (selection.getLocation().equals(location))
                 return selection;
-            }
         }
         return null;
     }
 
-    public BlockSelection addSelection(Location location) {
+    public BlockSelection addSelection(BlockPos location) {
         // Do nothing if user already has this selection.
         BlockSelection selection = getSelection(location);
         if (selection != null) return selection;
@@ -75,5 +109,4 @@ public final class User {
         selections.add(selection);
         return selection;
     }
-
 }

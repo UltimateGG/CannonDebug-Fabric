@@ -25,8 +25,7 @@
 
 package org.originmc.cannondebug.utils;
 
-import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.PermissionAttachmentInfo;
+import net.minecraft.server.command.ServerCommandSource;
 
 public final class NumberUtils {
 
@@ -49,12 +48,14 @@ public final class NumberUtils {
      * Attempts to find the highest integer based off the effective permissions
      * of a permissible.
      *
-     * @param permissible the permissible to check for permissions.
+     * @param sender the permissible to check for permissions.
      * @param permission the start of the permission string.
      * @return highest value that begins with permission string.
      */
-    public static int getNumericalPerm(Permissible permissible, String permission) {
-        int value = 0;
+    public static int getNumericalPerm(ServerCommandSource sender, String permission) {
+        return sender.hasPermissionLevel(4) ? Integer.MAX_VALUE : 0;
+
+       /* int value = 0;
         for (PermissionAttachmentInfo perm : permissible.getEffectivePermissions()) {
             // Do nothing if permission does not start with called.
             String checkPerm = perm.getPermission();
@@ -80,7 +81,6 @@ public final class NumberUtils {
                 value = comparison;
             }
         }
-        return value;
+        return value;*/
     }
-
 }

@@ -25,7 +25,7 @@
 
 package org.originmc.cannondebug.cmd;
 
-import org.bukkit.command.CommandSender;
+import net.minecraft.server.command.ServerCommandSource;
 import org.originmc.cannondebug.CannonDebugPlugin;
 
 import java.lang.reflect.InvocationTargetException;
@@ -67,7 +67,7 @@ public enum HistoryCommandType {
      * @param args   arguments included with the command.
      * @return a new CommandExecutor instance that corresponds to the command arguments.
      */
-    public static CommandExecutor fromCommand(CannonDebugPlugin plugin, CommandSender sender, String[] args) {
+    public static CommandExecutor fromCommand(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args) {
         // Return default (HELP) command type if invalid arguments.
         if (args.length == 1 || !BY_ALIAS.containsKey(args[1])) {
             return newInstance(HELP, plugin, sender, args);
@@ -87,10 +87,10 @@ public enum HistoryCommandType {
      * @param args        arguments included with the command.
      * @return a new CommandExecutor instance that corresponds to the command type.
      */
-    public static CommandExecutor newInstance(HistoryCommandType commandType, CannonDebugPlugin plugin, CommandSender sender, String[] args) {
+    public static CommandExecutor newInstance(HistoryCommandType commandType, CannonDebugPlugin plugin, ServerCommandSource sender, String[] args) {
         try {
             return commandType.commandExecutor
-                    .getConstructor(CannonDebugPlugin.class, CommandSender.class, String[].class, String.class)
+                    .getConstructor(CannonDebugPlugin.class, ServerCommandSource.class, String[].class, String.class)
                     .newInstance(plugin, sender, args, commandType.permission);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);

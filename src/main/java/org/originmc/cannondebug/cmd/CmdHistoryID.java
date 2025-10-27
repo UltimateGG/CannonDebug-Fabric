@@ -25,26 +25,27 @@
 
 package org.originmc.cannondebug.cmd;
 
-import mkremins.fanciful.FancyMessage;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-import org.bukkit.util.Vector;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Vec3d;
 import org.originmc.cannondebug.BlockSelection;
 import org.originmc.cannondebug.CannonDebugPlugin;
 import org.originmc.cannondebug.EntityTracker;
 import org.originmc.cannondebug.FancyPager;
-import org.originmc.cannondebug.utils.EnumUtils;
 import org.originmc.cannondebug.utils.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.bukkit.ChatColor.*;
+import static net.minecraft.text.ClickEvent.Action.RUN_COMMAND;
+import static net.minecraft.text.HoverEvent.Action.SHOW_TEXT;
 
 public final class CmdHistoryID extends CommandExecutor {
 
-    public CmdHistoryID(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
+    public CmdHistoryID(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
@@ -57,77 +58,81 @@ public final class CmdHistoryID extends CommandExecutor {
         int id = Math.abs(NumberUtils.parseInt(args[2]));
         BlockSelection selection = user.getSelection(id);
         if (selection == null) {
-            sender.sendMessage(ChatColor.RED + "You have input an invalid id!");
+            sender.sendMessage(Text.literal("You have input an invalid id!").formatted(Formatting.RED));
             return true;
         }
 
         // Generate a new fancy message line to add to the pager.
-        List<FancyMessage> lines = new ArrayList<>();
+        List<Text> lines = new ArrayList<>();
         EntityTracker tracker = selection.getTracker();
         int lifespan = tracker.getLocationHistory().size();
-        Location initial = tracker.getLocationHistory().get(0);
+        Vec3d initial = tracker.getLocationHistory().get(0);
+
         for (int i = 0; i < lifespan; i++) {
-            Location location = tracker.getLocationHistory().get(i);
-            Vector velocity = tracker.getVelocityHistory().get(i);
-            lines.add(new FancyMessage("Tick: " + i + " ")
-                            .color(GRAY)
-                            .formattedTooltip(
-                                    new FancyMessage("Click for all history on this tick.")
-                                            .color(DARK_AQUA)
-                                            .style(BOLD),
+            Vec3d location = tracker.getLocationHistory().get(i);
+            Vec3d velocity = tracker.getVelocityHistory().get(i);
 
-                                    new FancyMessage("Server tick: ")
-                                            .color(YELLOW)
-                                            .then("" + (tracker.getSpawnTick() + i))
-                                            .color(LIGHT_PURPLE),
+            // --- Build hover tooltip for tick info ---
+            Text tickTooltip = Text.empty()
+                    .append(Text.literal("Click for all history on this tick.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
+                    .append(Text.literal("Server tick: ").formatted(Formatting.YELLOW))
+                    .append(Text.literal(String.valueOf(tracker.getSpawnTick() + i)).formatted(Formatting.LIGHT_PURPLE))
+                    .append(Text.literal("\nSpawned tick: ").formatted(Formatting.YELLOW))
+                    .append(Text.literal(String.valueOf(tracker.getSpawnTick())).formatted(Formatting.AQUA))
+                    .append(Text.literal("\nDeath tick: ").formatted(Formatting.YELLOW))
+                    .append(Text.literal(tracker.getDeathTick() == -1 ? "Still alive" : String.valueOf(tracker.getDeathTick()))
+                            .formatted(Formatting.RED))
+                    .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
+                    .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
+                    .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
+                    .append(Text.literal(Math.floor(initial.getX()) + " " + Math.floor(initial.getY()) + " " + Math.floor(initial.getZ()))
+                            .formatted(Formatting.GRAY));
 
-                                    new FancyMessage("Spawned tick: ")
-                                            .color(YELLOW)
-                                            .then("" + tracker.getSpawnTick())
-                                            .color(AQUA),
+            // --- Build hover tooltip for location + velocity ---
+            Text hoverLocVel = Text.empty()
+                    .append(Text.literal("LOCATION\n").formatted(Formatting.YELLOW, Formatting.BOLD))
+                    .append(Text.literal("X: ").formatted(Formatting.WHITE))
+                    .append(Text.literal(String.valueOf(location.getX())).formatted(Formatting.RED))
+                    .append(Text.literal("\nY: ").formatted(Formatting.WHITE))
+                    .append(Text.literal(String.valueOf(location.getY())).formatted(Formatting.RED))
+                    .append(Text.literal("\nZ: ").formatted(Formatting.WHITE))
+                    .append(Text.literal(String.valueOf(location.getZ())).formatted(Formatting.RED))
+                    .append(Text.literal("\n\nVELOCITY\n").formatted(Formatting.YELLOW, Formatting.BOLD))
+                    .append(Text.literal("X: ").formatted(Formatting.WHITE))
+                    .append(Text.literal(String.valueOf(velocity.getX())).formatted(Formatting.RED))
+                    .append(Text.literal("\nY: ").formatted(Formatting.WHITE))
+                    .append(Text.literal(String.valueOf(velocity.getY())).formatted(Formatting.RED))
+                    .append(Text.literal("\nZ: ").formatted(Formatting.WHITE))
+                    .append(Text.literal(String.valueOf(velocity.getZ())).formatted(Formatting.RED));
 
-                                    new FancyMessage("Death tick: ")
-                                            .color(YELLOW)
-                                            .then((tracker.getDeathTick() == -1 ? "Still alive" : "" + tracker.getDeathTick()))
-                                            .color(RED),
+            // --- Build main interactive message ---
+            int finalI = i;
+            Text line = Text.empty()
+                    .append(Text.literal("Tick: " + i + " ")
+                            .formatted(Formatting.GRAY)
+                            .styled(s -> s
+                                    .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug h t " + (tracker.getSpawnTick() + finalI)))
+                                    .withHoverEvent(new HoverEvent(SHOW_TEXT, tickTooltip))
+                    ))
 
-                                    new FancyMessage("Cached tick: ")
-                                            .color(YELLOW)
-                                            .then("" + plugin.getCurrentTick())
-                                            .color(GREEN),
+                    // Entity name
+                    .append(tracker.getEntityType().getName().copy().formatted(Formatting.YELLOW))
 
-                                    new FancyMessage("Initial Location: ")
-                                            .color(YELLOW)
-                                            .then(initial.getBlockX() + " " + initial.getBlockY() + " " + initial.getBlockZ())
-                                            .color(GRAY)
-                            )
+                    // Separator
+                    .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
 
-                            .command("/cannondebug h t " + (tracker.getSpawnTick() + i))
+                    // Label for hoverable section
+                    .append(Text.literal("Hover for location and velocity")
+                            .formatted(Formatting.WHITE)
+                            .styled(s -> s.withHoverEvent(new HoverEvent(SHOW_TEXT, hoverLocVel))));
 
-                            .then(EnumUtils.getFriendlyName(tracker.getEntityType()))
-                            .color(YELLOW)
-
-                            .then(" | ")
-                            .color(DARK_GRAY)
-
-                            .then("Hover for location and velocity")
-                            .color(WHITE)
-                            .formattedTooltip(
-                                    new FancyMessage("LOCATION").color(YELLOW).style(BOLD),
-                                    new FancyMessage("X: ").color(WHITE).then("" + location.getX()).color(RED),
-                                    new FancyMessage("Y: ").color(WHITE).then("" + location.getY()).color(RED),
-                                    new FancyMessage("Z: ").color(WHITE).then("" + location.getZ()).color(RED),
-                                    new FancyMessage(""),
-                                    new FancyMessage("VELOCITY").color(YELLOW).style(BOLD),
-                                    new FancyMessage("X: ").color(WHITE).then("" + velocity.getX()).color(RED),
-                                    new FancyMessage("Y: ").color(WHITE).then("" + velocity.getY()).color(RED),
-                                    new FancyMessage("Z: ").color(WHITE).then("" + velocity.getZ()).color(RED)
-                            )
-            );
+            lines.add(line);
         }
 
-        // Send user the pager messages.
-        FancyPager pager = new FancyPager("History for selection ID: " + id, lines.toArray(new FancyMessage[lines.size()]));
+        FancyPager pager = new FancyPager(
+                "History for selection ID: " + id,
+                lines.toArray(Text[]::new)
+        );
         send(pager, 0);
         return true;
     }

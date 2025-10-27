@@ -25,104 +25,128 @@
 
 package org.originmc.cannondebug;
 
-import lombok.Data;
-import mkremins.fanciful.FancyMessage;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
-import static org.bukkit.ChatColor.*;
-
-@Data
 public final class FancyPager {
-
-    public static final FancyPager DEFAULT = new FancyPager("Default Pager", new FancyMessage[]{});
+    public static final FancyPager DEFAULT = new FancyPager("Default Pager");
 
     private static final int maxLines = 10;
 
-    private final FancyMessage[][] pages;
+    private final Text[][] pages;
 
     private final int pageCount;
 
     private final int totalLines;
 
-    public FancyPager(String header, FancyMessage[] lines) {
-        // Grant default line if search ended up empty.
-        if (lines.length == 0) {
-            lines = new FancyMessage[]{new FancyMessage("Sorry, no results were found.").color(YELLOW)};
-        }
+    public Text[][] getPages() {
+        return this.pages;
+    }
 
-        // Initialize pager data.
-        int totalLines = lines.length + ((lines.length / (maxLines - 2)) * 2);
-        if (totalLines % maxLines == 0) totalLines -= 2;
+    public int getPageCount() {
+        return this.pageCount;
+    }
+
+    public int getTotalLines() {
+        return this.totalLines;
+    }
+
+    public FancyPager(String header, Text... lines) {
+        if (lines.length == 0)
+            lines = new Text[] { Text.literal("Sorry, no results were found.").formatted(Formatting.YELLOW) };
+        int totalLines = lines.length + lines.length / 8 * 2;
+        if (totalLines % 10 == 0)
+            totalLines -= 2;
         this.totalLines = totalLines;
-        pageCount = (totalLines / maxLines) + 1;
-        pages = new FancyMessage[pageCount][maxLines];
-
-        // Loop through every possible line.
+        this.pageCount = totalLines / 10 + 1;
+        this.pages = new Text[this.pageCount][10];
         int page = 0;
         for (int i = 0; i <= totalLines; i++) {
-            // Increment page number if reached max number of lines.
-            if (i != 0 && i % maxLines == 0) {
+            if (i != 0 && i % 10 == 0)
                 page++;
-            }
-
-            // Switch the line number to add header and footer.
-            int line = i % maxLines;
+            int line = i % 10;
             switch (line) {
                 case 0:
-                    pages[page][line] = new FancyMessage("_____.[ ").color(GOLD)
-                            .then(header).color(DARK_GREEN)
-                            .then(" - ").color(GOLD)
-                            .then((page + 1) + "/" + pageCount).color(AQUA)
-                            .then(" ]._____").color(GOLD);
+                    this.pages[page][line] = Text.literal("_____.[ ").formatted(Formatting.GOLD)
+                            .append(Text.literal(header).formatted(Formatting.DARK_GREEN))
+                            .append(Text.literal(" - ").formatted(Formatting.GOLD))
+                            .append(Text.literal((page + 1) + "/" + this.pageCount).formatted(Formatting.AQUA))
+                            .append(Text.literal(" ]._____").formatted(Formatting.GOLD));
                     break;
                 case 9:
-                    pages[page][line] = getFooter(page);
+                    this.pages[page][line] = getFooter(page);
                     break;
                 default:
-                    pages[page][line] = lines[i - (2 * page) - 1];
+                    this.pages[page][line] = lines[i - 2 * page - 1];
                     break;
             }
         }
-
-        // Always attempt to add a footer.
-        if (pages[pageCount - 1][maxLines - 1] == null) {
-            pages[pageCount - 1][maxLines - 1] = getFooter(pageCount - 1);
-        }
+        if (this.pages[this.pageCount - 1][9] == null)
+            this.pages[this.pageCount - 1][9] = getFooter(this.pageCount - 1);
     }
 
-    private FancyMessage getFooter(int page) {
-        // Create formatted tooltips.
-        FancyMessage prev = new FancyMessage("Previous Page: ").color(YELLOW).then("" + page).color(LIGHT_PURPLE);
-        FancyMessage next = new FancyMessage("Next Page: ").color(YELLOW).then("" + (page + 2)).color(LIGHT_PURPLE);
+    private Text getFooter(int page) {
+        // Tooltip texts (hover tooltips)
+        Text prevTooltip = Text.literal("Previous Page: ")
+                .formatted(Formatting.YELLOW)
+                .append(Text.literal(String.valueOf(page)).formatted(Formatting.LIGHT_PURPLE));
 
-        // Only apply next footer if first page.
+        Text nextTooltip = Text.literal("Next Page: ")
+                .formatted(Formatting.YELLOW)
+                .append(Text.literal(String.valueOf(page + 2)).formatted(Formatting.LIGHT_PURPLE));
+
+        // Helper to build clickable parts
+        Text prevButton = Text.empty()
+                .append(Text.literal("<<< ")
+                        .formatted(Formatting.DARK_GRAY)
+                        .styled(s -> s
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cannondebug p " + page))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, prevTooltip))
+                ))
+                .append(Text.literal("PREV")
+                        .formatted(Formatting.RED, Formatting.BOLD)
+                        .styled(s -> s
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cannondebug p " + page))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, prevTooltip))
+                        )
+                );
+
+        Text nextButton = Text.empty()
+                .append(
+                    Text.literal("NEXT")
+                    .formatted(Formatting.GREEN, Formatting.BOLD)
+                    .styled(s -> s
+                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cannondebug p " + (page + 2)))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nextTooltip))
+                ))
+                .append(Text.literal(" >>>")
+                        .formatted(Formatting.DARK_GRAY)
+                        .styled(s -> s
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cannondebug p " + (page + 2)))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nextTooltip))
+                        )
+                );
+
+        // Now decide what footer to show depending on page
         if (page == 0) {
-            // Do not bother adding a footer with a page count of 1.
-            if (pageCount == 1) return null;
-            return new FancyMessage("")
-                    .then("NEXT").color(GREEN).style(BOLD).command("/cannondebug p " + (page + 2)).formattedTooltip(next)
-                    .then(" >>>").color(DARK_GRAY).command("/cannondebug p " + (page + 2)).formattedTooltip(next);
-        }
-
-        // Only apply previous footer if last page.
-        else if (page == pageCount - 1) {
-            return new FancyMessage("")
-                    .then("<<< ").color(DARK_GRAY).command("/cannondebug p " + page).formattedTooltip(prev)
-                    .then("PREV").color(RED).style(BOLD).command("/cannondebug p " + page).formattedTooltip(prev);
-        }
-
-        // Apply both footers if middle page.
-        else {
-            return new FancyMessage("")
-                    .then("<<< ").color(DARK_GRAY).command("/cannondebug p " + page).formattedTooltip(prev)
-                    .then("PREV").color(RED).style(BOLD).command("/cannondebug p " + page).formattedTooltip(prev)
-                    .then("    ")
-                    .then("NEXT").color(GREEN).style(BOLD).command("/cannondebug p " + (page + 2)).formattedTooltip(next)
-                    .then(" >>>").color(DARK_GRAY).command("/cannondebug p " + (page + 2)).formattedTooltip(next);
+            if (this.pageCount == 1) {
+                return null; // single-page help
+            }
+            return nextButton;
+        } else if (page == this.pageCount - 1) {
+            return prevButton;
+        } else {
+            // Both PREV and NEXT with spacing in between
+            return Text.empty()
+                    .append(prevButton)
+                    .append(Text.literal("    ")) // spacer
+                    .append(nextButton);
         }
     }
 
-    public FancyMessage[] getPage(int page) {
-        return pages[page];
+    public Text[] getPage(int page) {
+        return this.pages[page];
     }
-
 }

@@ -25,10 +25,9 @@
 
 package org.originmc.cannondebug.cmd;
 
-import mkremins.fanciful.FancyMessage;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.originmc.cannondebug.CannonDebugPlugin;
 import org.originmc.cannondebug.FancyPager;
 import org.originmc.cannondebug.User;
@@ -37,7 +36,7 @@ public abstract class CommandExecutor {
 
     public final CannonDebugPlugin plugin;
 
-    public final CommandSender sender;
+    public final ServerCommandSource sender;
 
     public final String[] args;
 
@@ -45,7 +44,7 @@ public abstract class CommandExecutor {
 
     public User user = null;
 
-    public CommandExecutor(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
+    public CommandExecutor(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
         this.plugin = plugin;
         this.sender = sender;
         this.args = args;
@@ -60,21 +59,21 @@ public abstract class CommandExecutor {
      */
     public boolean execute() {
         // Do nothing if the sender does not have permission.
-        if (!sender.hasPermission(permission)) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission.");
+        if (!sender.hasPermissionLevel(4/*permission*/)) {
+            sender.sendMessage(Text.literal("You do not have permission.").formatted(Formatting.RED));
             return true;
         }
 
         // Do nothing if sender is not a player.
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can execute this command!");
+        if (sender.getPlayer() == null) {
+            sender.sendMessage(Text.literal("Only players can execute this command!").formatted(Formatting.RED));
             return true;
         }
 
         // Do nothing if sender has no user profile.
-        user = plugin.getUser(((Player) sender).getUniqueId());
+        user = plugin.getUser(sender.getPlayer().getUuid());
         if (user == null) {
-            sender.sendMessage(ChatColor.RED + "Player profile has not been loaded! Please re-log then retry.");
+            sender.sendMessage(Text.literal("Player profile has not been loaded! Please re-log then retry.").formatted(Formatting.RED));
             return true;
         }
 
@@ -89,13 +88,13 @@ public abstract class CommandExecutor {
      * @param page the page to send to the player.
      */
     public void send(FancyPager pager, int page) {
-        for (FancyMessage message : pager.getPage(page)) {
+        for (Text message : pager.getPage(page)) {
             // Send empty messages if null.
             if (message == null) {
-                sender.sendMessage("");
+                sender.sendMessage(Text.literal(""));
                 continue;
             }
-            message.send(sender);
+            sender.sendMessage(message);
         }
 
         user.setPager(pager);
