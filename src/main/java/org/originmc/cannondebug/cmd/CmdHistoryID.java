@@ -85,11 +85,12 @@ public final class CmdHistoryID extends CommandExecutor {
                     .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
                     .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
                     .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(Math.floor(initial.getX()) + " " + Math.floor(initial.getY()) + " " + Math.floor(initial.getZ()))
+                    .append(Text.literal((int)initial.getX() + " " + (int)initial.getY() + " " + (int)initial.getZ())
                             .formatted(Formatting.GRAY));
 
             // --- Build hover tooltip for location + velocity ---
             Text hoverLocVel = Text.empty()
+                    .append(Text.literal("Click to teleport to location.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
                     .append(Text.literal("LOCATION\n").formatted(Formatting.YELLOW, Formatting.BOLD))
                     .append(Text.literal("X: ").formatted(Formatting.WHITE))
                     .append(Text.literal(String.valueOf(location.getX())).formatted(Formatting.RED))
@@ -115,16 +116,23 @@ public final class CmdHistoryID extends CommandExecutor {
                                     .withHoverEvent(new HoverEvent(SHOW_TEXT, tickTooltip))
                     ))
 
-                    // Entity name
-                    .append(tracker.getEntityType().getName().copy().formatted(Formatting.YELLOW))
-
-                    // Separator
-                    .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
-
                     // Label for hoverable section
-                    .append(Text.literal("Hover for location and velocity")
-                            .formatted(Formatting.WHITE)
-                            .styled(s -> s.withHoverEvent(new HoverEvent(SHOW_TEXT, hoverLocVel))));
+                    .append(
+                            Text.empty()
+                            // Entity name
+                            .append(tracker.getEntityType().getName().copy().formatted(Formatting.YELLOW))
+
+                            // Separator
+                            .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
+                            .append(
+                                Text.literal("Hover for location and velocity")
+                                .formatted(Formatting.WHITE)
+                            )
+                            .styled(s -> s
+                                    .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug tp " + id + " " + finalI))
+                                    .withHoverEvent(new HoverEvent(SHOW_TEXT, hoverLocVel))
+                            ))
+                    ;
 
             lines.add(line);
         }

@@ -60,7 +60,9 @@ public final class CmdHistoryAll extends CommandExecutor {
 
             // Generate a new fancy message line to add to the pager.
             Vec3d initial = tracker.getLocationHistory().get(0);
-            Vec3d latest = tracker.getLocationHistory().get(tracker.getLocationHistory().size() - 1);
+            int latestTick = tracker.getLocationHistory().size() - 1;
+            Vec3d latest = tracker.getLocationHistory().get(latestTick);
+
             // === Build hover tooltip ===
             Text tooltip = Text.empty()
                     .append(Text.literal("Click for all history on this ID.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
@@ -73,8 +75,10 @@ public final class CmdHistoryAll extends CommandExecutor {
                     .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
                     .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
                     .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(Math.floor(initial.getX()) + " " + Math.floor(initial.getY()) + " " + Math.floor(initial.getZ()))
+                    .append(Text.literal((int)initial.getX() + " " + (int)initial.getY() + " " + (int)initial.getZ())
                             .formatted(Formatting.GRAY));
+
+            Text tpTooltip = Text.literal("Click to teleport to location.").formatted(Formatting.DARK_AQUA, Formatting.BOLD);
 
             // === Build main clickable line ===
             Text line = Text.literal("ID: " + selection.getId() + " ")
@@ -84,20 +88,29 @@ public final class CmdHistoryAll extends CommandExecutor {
                             .withHoverEvent(new HoverEvent(SHOW_TEXT, tooltip))
                     )
 
-                    // Entity name
-                    .append(tracker.getEntityType().getName().copy()
-                            .formatted(Formatting.YELLOW))
+                    .append(
+                            Text.empty()
+                            // Entity name
+                            .append(tracker.getEntityType().getName().copy()
+                                    .formatted(Formatting.YELLOW))
 
-                    // Separator
-                    .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
+                            // Separator
+                            .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
 
-                    // Label
-                    .append(Text.literal("Last location: ").formatted(Formatting.WHITE))
+                            // Label
+                            .append(
+                                Text.literal("Last location: ").formatted(Formatting.WHITE)
 
-                    // Coordinates
-                    .append(Text.literal(
-                            Math.floor(latest.getX()) + " " + Math.floor(latest.getY()) + " " + Math.floor(latest.getZ())
-                    ).formatted(Formatting.RED));
+                                // Coordinates
+                                .append(
+                                    Text.literal((int)latest.getX() + " " + (int)latest.getY() + " " + (int)latest.getZ())
+                                    .formatted(Formatting.RED)
+                                ).styled(s -> s
+                                    .withHoverEvent(new HoverEvent(SHOW_TEXT, tpTooltip))
+                                    .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug tp " + selection.getId() + " " + latestTick))
+                                )
+                            )
+                    );
 
             lines.add(line);
         }

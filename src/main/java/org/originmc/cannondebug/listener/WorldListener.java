@@ -53,7 +53,7 @@ public class WorldListener {
 
             // Build a new tracker due to it being used.
             if (tracker == null) {
-                tracker = new EntityTracker(entity.getType(), plugin.getCurrentTick());
+                tracker = new EntityTracker((ServerWorld) entity.getWorld(), entity.getType(), plugin.getCurrentTick());
                 tracker.setEntity(entity);
                 plugin.getActiveTrackers().add(tracker);
             }

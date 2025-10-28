@@ -40,6 +40,9 @@ import org.originmc.cannondebug.utils.NumberUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.minecraft.text.ClickEvent.Action.RUN_COMMAND;
+
+
 public final class CmdHistoryTick extends CommandExecutor {
 
     public CmdHistoryTick(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
@@ -82,11 +85,12 @@ public final class CmdHistoryTick extends CommandExecutor {
                     .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
                     .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
                     .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(Math.floor(initial.getX()) + " " + Math.floor(initial.getY()) + " " + Math.floor(initial.getZ()))
+                    .append(Text.literal((int)initial.getX() + " " + (int)initial.getY() + " " + (int)initial.getZ())
                             .formatted(Formatting.GRAY));
 
             // Tooltip for location/velocity
             Text hoverLocVel = Text.empty()
+                    .append(Text.literal("Click to teleport to location.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
                     .append(Text.literal("LOCATION\n").formatted(Formatting.YELLOW, Formatting.BOLD))
                     .append(Text.literal("X: ").formatted(Formatting.WHITE))
                     .append(Text.literal(String.valueOf(location.getX())).formatted(Formatting.RED))
@@ -110,11 +114,18 @@ public final class CmdHistoryTick extends CommandExecutor {
                                     .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cannondebug h i " + selection.getId()))
                                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, idTooltip))
                     ))
-                    .append(tracker.getEntityType().getName().copy().formatted(Formatting.YELLOW))
-                    .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
-                    .append(Text.literal("Hover for location and velocity")
-                            .formatted(Formatting.WHITE)
-                            .styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverLocVel))));
+                    .append(
+                            Text.empty()
+                            .append(tracker.getEntityType().getName().copy().formatted(Formatting.YELLOW))
+                            .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
+                            .append(Text.literal("Hover for location and velocity")
+                                    .formatted(Formatting.WHITE)
+                            )
+                            .styled(s -> s
+                                    .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug tp " + selection.getId() + " " + relativeTick))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverLocVel))
+                            )
+                    );
 
             lines.add(line);
         }

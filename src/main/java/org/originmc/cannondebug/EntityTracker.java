@@ -29,10 +29,13 @@ import java.util.ArrayList;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 public final class EntityTracker {
     private final EntityType<?> entityType;
+
+    private final ServerWorld world;
 
     private final long spawnTick;
 
@@ -44,7 +47,8 @@ public final class EntityTracker {
 
     private Entity entity;
 
-    public EntityTracker(EntityType<?> entityType, long spawnTick) {
+    public EntityTracker(ServerWorld world, EntityType<?> entityType, long spawnTick) {
+        this.world = world;
         this.locationHistory = new ArrayList<>();
         this.velocityHistory = new ArrayList<>();
         this.deathTick = -1L;
@@ -58,6 +62,10 @@ public final class EntityTracker {
 
     public void setEntity(Entity entity) {
         this.entity = entity;
+    }
+
+    public ServerWorld getWorld() {
+        return world;
     }
 
     public EntityType<?> getEntityType() {

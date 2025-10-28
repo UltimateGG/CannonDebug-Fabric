@@ -59,6 +59,10 @@ public final class CmdHelp extends CommandExecutor {
             Text.literal("/c s,select ").formatted(Formatting.AQUA)
                     .append(Text.literal("Bind block selector tool to hand.").formatted(Formatting.YELLOW)),
 
+            Text.literal("/c tp,teleport ").formatted(Formatting.AQUA)
+                    .append(Text.literal("[id] [tick] ").formatted(Formatting.DARK_AQUA))
+                    .append(Text.literal("Teleport to an entity at a point of time.").formatted(Formatting.YELLOW)),
+
             Text.empty(),
             Text.literal("This mod provides an easy way to profile cannons.").formatted(Formatting.GREEN),
             Text.empty(),

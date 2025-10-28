@@ -1,6 +1,7 @@
 # CannonDebug
 
 1.20 Fabric port of the CannonDebug plugin, now with 0 dependencies.
+Also added click to teleport like OSMC.
 
 *Best cannon debugger out there!*
 
@@ -36,23 +37,24 @@
 
 ## Permissions
 
-| **Permission**                      | **Description**                                           | **Default**    |
-| ----------------------------------- | --------------------------------------------------------- | -------------- |
-| cannondebug.clear                   | Clear either history or selections                        | everyone       |
-| cannondebug.help                    | View the default help pages                               | everyone       |
-| cannondebug.history                 | Core node to access the history command                   | everyone       |
-| cannondebug.history.all             | View latest history for all profiled entities             | everyone       |
-| cannondebug.history.help            | View the history help pages                               | everyone       |
-| cannondebug.history.id              | View latest history for specific entity                   | everyone       |
-| cannondebug.history.tick            | View all tracker history in a specific tick               | everyone       |
-| cannondebug.maxarea.#               | Area of region allowed in blocks to select with WorldEdit | everyone (500) |
-| cannondebug.maxselections.#         | Maximum amount of selected blocks to track at one time    | everyone (25)  |
-| cannondebug.maxarea.unlimited       | Unlimited selection area with WorldEdit                   | operator       |
-| cannondebug.maxselections.unlimited | Unlimited selected blocks at any one time                 | operator       |
-| cannondebug.page                    | Access to use the pager system                            | everyone       |
-| cannondebug.preview                 | Preview all selected blocks for profiling                 | everyone       |
-| cannondebug.region                  | Use the region selector tool utilizing WorldEdit          | everyone       |
-| cannondebug.select                  | Use the hand selector tool                                | everyone       |
+| **Permission**                      | **Description**                                           |
+|-------------------------------------|-----------------------------------------------------------|
+| cannondebug.clear                   | Clear either history or selections                        |
+| cannondebug.help                    | View the default help pages                               |
+| cannondebug.history                 | Core node to access the history command                   |
+| cannondebug.history.all             | View latest history for all profiled entities             |
+| cannondebug.history.help            | View the history help pages                               |
+| cannondebug.history.id              | View latest history for specific entity                   |
+| cannondebug.history.tick            | View all tracker history in a specific tick               |
+| cannondebug.maxarea.#               | Area of region allowed in blocks to select with WorldEdit |
+| cannondebug.maxselections.#         | Maximum amount of selected blocks to track at one time    |
+| cannondebug.maxarea.unlimited       | Unlimited selection area with WorldEdit                   |
+| cannondebug.maxselections.unlimited | Unlimited selected blocks at any one time                 |
+| cannondebug.page                    | Access to use the pager system                            |
+| cannondebug.preview                 | Preview all selected blocks for profiling                 |
+| cannondebug.region                  | Use the region selector tool utilizing WorldEdit          |
+| cannondebug.select                  | Use the hand selector tool                                |
+| cannondebug.teleport                | Allow teleporting to tracked locations                    |
 
 ## Contributing
 

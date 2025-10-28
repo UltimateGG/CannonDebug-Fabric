@@ -59,7 +59,7 @@ public abstract class CommandExecutor {
      */
     public boolean execute() {
         // Do nothing if the sender does not have permission.
-        if (!sender.hasPermissionLevel(4/*permission*/)) {
+        if (!sender.hasPermissionLevel(4/*permission*/)) { // For now just OPs
             sender.sendMessage(Text.literal("You do not have permission.").formatted(Formatting.RED));
             return true;
         }
