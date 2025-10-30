@@ -39,7 +39,6 @@ import net.minecraft.util.math.BlockPos;
 import org.originmc.cannondebug.cmd.CommandType;
 import org.originmc.cannondebug.listener.PlayerListener;
 import org.originmc.cannondebug.listener.WorldListener;
-import org.originmc.cannondebug.utils.MaterialUtils;
 import org.originmc.cannondebug.utils.NumberUtils;
 
 import java.util.ArrayList;
@@ -75,10 +74,6 @@ public final class CannonDebugPlugin {
 
     public long getCurrentTick() {
         return currentTick;
-    }
-
-    public void setCurrentTick(long currentTick) {
-        this.currentTick = currentTick;
     }
 
     public void init() {
@@ -156,9 +151,6 @@ public final class CannonDebugPlugin {
      * @param block the block to select.
      */
     public void handleSelection(User user, BlockPos pos, BlockState block, MinecraftServer server) {
-        // Do nothing if not a selectable block.
-        if (!MaterialUtils.isSelectable(block.getBlock())) return;
-
         // Attempt to deselect block if it is already selected.
         BlockSelection selection = user.getSelection(pos);
         PlayerEntity player = user.getPlayer();

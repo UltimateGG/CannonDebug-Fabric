@@ -1,8 +1,10 @@
 package org.originmc.cannondebug.listener;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -38,6 +40,11 @@ public class WorldListener {
                 return stack;
             }
         });
+
+        ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
+            if (entity instanceof FallingBlockEntity)
+                onFallingBlockSpawn((FallingBlockEntity) entity, world);
+        });
     }
 
     private void onTNTDispensed(BlockPos dispenser, TntEntity entity) {
@@ -63,34 +70,26 @@ public class WorldListener {
         }
     }
 
-    /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void startProfiling(EntityChangeBlockEvent event) {
-        // Do nothing if the material is not used for stacking in cannons.
-        Block block = event.getBlock();
-        if (!isStacker(block.getType())) return;
-
-        // Do nothing if block is not turning into a falling block.
-        if (!(event.getEntity() instanceof FallingBlock)) return;
-
+    private void onFallingBlockSpawn(FallingBlockEntity entity, ServerWorld world) {
         // Loop through each user profile.
         BlockSelection selection;
         EntityTracker tracker = null;
         for (User user : plugin.getUsers().values()) {
             // Do nothing if user is not attempting to profile current block.
-            selection = user.getSelection(block.getLocation());
+            selection = user.getSelection(entity.getBlockPos());
             if (selection == null) {
                 continue;
             }
 
             // Build a new tracker due to it being used.
             if (tracker == null) {
-                tracker = new EntityTracker(event.getEntityType(), plugin.getCurrentTick());
-                tracker.setEntity(event.getEntity());
+                tracker = new EntityTracker(world, entity.getType(), plugin.getCurrentTick());
+                tracker.setEntity(entity);
                 plugin.getActiveTrackers().add(tracker);
             }
 
             // Add block tracker to user.
             selection.setTracker(tracker);
         }
-    }*/
+    }
 }

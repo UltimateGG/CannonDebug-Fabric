@@ -25,6 +25,9 @@
 
 package org.originmc.cannondebug;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.FallingBlock;
 import net.minecraft.util.math.BlockPos;
 
 
@@ -55,5 +58,16 @@ public final class BlockSelection {
 
     public EntityTracker getTracker() {
         return this.tracker;
+    }
+
+    /**
+     * Identifies whether or not a material can be selected using the block
+     * selection mode.
+     *
+     * @param block the material to identify.
+     * @return true if material can be selected.
+     */
+    public static boolean isSelectable(Block block) {
+        return block instanceof FallingBlock || block instanceof DispenserBlock;
     }
 }

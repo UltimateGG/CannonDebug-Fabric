@@ -65,6 +65,12 @@ public final class CmdHistoryID extends CommandExecutor {
         // Generate a new fancy message line to add to the pager.
         List<Text> lines = new ArrayList<>();
         EntityTracker tracker = selection.getTracker();
+
+        if (tracker == null) {
+            sender.sendMessage(Text.literal("No data tracked for that id yet!").formatted(Formatting.RED));
+            return true;
+        }
+
         int lifespan = tracker.getLocationHistory().size();
         Vec3d initial = tracker.getLocationHistory().get(0);
 
@@ -90,6 +96,7 @@ public final class CmdHistoryID extends CommandExecutor {
 
             // --- Build hover tooltip for location + velocity ---
             Text hoverLocVel = Text.empty()
+                    .append(Text.literal("Tick " + i + "\n").formatted(Formatting.WHITE, Formatting.BOLD))
                     .append(Text.literal("Click to teleport to location.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
                     .append(Text.literal("LOCATION\n").formatted(Formatting.YELLOW, Formatting.BOLD))
                     .append(Text.literal("X: ").formatted(Formatting.WHITE))

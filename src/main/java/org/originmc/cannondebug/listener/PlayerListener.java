@@ -1,6 +1,6 @@
 package org.originmc.cannondebug.listener;
 
-import org.originmc.cannondebug.utils.MaterialUtils;
+import org.originmc.cannondebug.BlockSelection;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -40,8 +40,10 @@ public class PlayerListener {
     }
 
     public ActionResult addSelection(PlayerEntity player, World world, Hand hand, BlockHitResult blockHitResult) {
+        if (hand != Hand.MAIN_HAND) return ActionResult.PASS;
+
         // Do nothing if not a selectable block.
-        if (!MaterialUtils.isSelectable(world.getBlockState(blockHitResult.getBlockPos()).getBlock())) return ActionResult.PASS;
+        if (!BlockSelection.isSelectable(world.getBlockState(blockHitResult.getBlockPos()).getBlock())) return ActionResult.PASS;
 
         // Do nothing if the player has no user profile attached.
         User user = plugin.getUser(player.getUuid());
@@ -58,8 +60,10 @@ public class PlayerListener {
     }
 
     public ActionResult removeSelection(PlayerEntity player, World world, Hand hand, BlockPos blockPos, Direction direction) {
+        if (hand != Hand.MAIN_HAND) return ActionResult.PASS;
+
         // Do nothing if not a selectable block.
-        if (!MaterialUtils.isSelectable(world.getBlockState(blockPos).getBlock())) return ActionResult.PASS;
+        if (!BlockSelection.isSelectable(world.getBlockState(blockPos).getBlock())) return ActionResult.PASS;
 
         // Do nothing if the player has no user profile attached.
         User user = plugin.getUser(player.getUuid());
