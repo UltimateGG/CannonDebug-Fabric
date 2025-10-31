@@ -27,14 +27,14 @@ package org.originmc.cannondebug;
 
 import java.util.ArrayList;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
 
 public final class User {
     private int id;
 
-    private final PlayerEntity player;
+    private final ServerPlayerEntity player;
 
     private final ArrayList<BlockSelection> selections;
 
@@ -44,7 +44,7 @@ public final class User {
 
     private FancyPager pager;
 
-    public User(PlayerEntity player) {
+    public User(ServerPlayerEntity player) {
         this.id = 1;
         this.selections = new ArrayList<>();
         this.pager = FancyPager.DEFAULT;
@@ -63,7 +63,7 @@ public final class User {
         this.pager = pager;
     }
 
-    public PlayerEntity getPlayer() {
+    public ServerPlayerEntity getPlayer() {
         return this.player;
     }
 

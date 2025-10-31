@@ -25,11 +25,15 @@
 
 package org.originmc.cannondebug.cmd;
 
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.originmc.cannondebug.BlockSelection;
 import org.originmc.cannondebug.CannonDebugPlugin;
+
+import java.util.Objects;
+
 
 public final class CmdClear extends CommandExecutor {
 
@@ -57,12 +61,13 @@ public final class CmdClear extends CommandExecutor {
         // Check if user wishes to delete selections.
         if (args[1].toLowerCase().startsWith("s")) {
             // Update the users preview if they have preview mode toggled.
-//            if (user.isPreviewing()) {
-//                for (BlockSelection selection : user.getSelections()) {
-//                    Block block = selection.getLocation().getBlock();
-//                    sender.getPlayer().sendBlockChange(block.getLocation(), block.getType(), block.getData());
-//                }
-//            }
+            if (user.isPreviewing()) {
+                for (BlockSelection selection : user.getSelections()) {
+                    Objects.requireNonNull(sender.getPlayer()).networkHandler.sendPacket(
+                        new BlockUpdateS2CPacket(selection.getLocation(), sender.getPlayer().getWorld().getBlockState(selection.getLocation()))
+                    );
+                }
+            }
 
             // Delete users selections.
             user.getSelections().clear();

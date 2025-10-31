@@ -29,10 +29,12 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.block.Blocks;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -106,11 +108,6 @@ public final class CannonDebugPlugin {
                             )
             );
         }));
-
-        // Load user profiles.
-//        for (Player player : getServer().getOnlinePlayers()) {
-//            users.put(player.getUniqueId(), new User(player));
-//        }
     }
 
     public void onServerTick() {
@@ -153,7 +150,7 @@ public final class CannonDebugPlugin {
     public void handleSelection(User user, BlockPos pos, BlockState block, MinecraftServer server) {
         // Attempt to deselect block if it is already selected.
         BlockSelection selection = user.getSelection(pos);
-        PlayerEntity player = user.getPlayer();
+        ServerPlayerEntity player = user.getPlayer();
         if (selection != null) {
             // Inform the player.
             player.sendMessage(Text.empty()
@@ -167,11 +164,14 @@ public final class CannonDebugPlugin {
             user.getSelections().remove(selection);
 
             // Update users preview.
-//            if (user.isPreviewing()) {
-//                server.execute(() -> {
-//                    player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
-//                });
-//            }
+            if (user.isPreviewing()) {
+                BlockSelection finalSelection = selection;
+                server.execute(() -> {
+                    player.networkHandler.sendPacket(
+                        new BlockUpdateS2CPacket(finalSelection.getLocation(), player.getWorld().getBlockState(finalSelection.getLocation()))
+                    );
+                });
+            }
             return;
         }
 
@@ -187,11 +187,13 @@ public final class CannonDebugPlugin {
         }
 
         // Update users preview.
-//        if (user.isPreviewing()) {
-//            server.execute(() -> {
-//                player.sendBlockChange(block.getLocation(), Material.EMERALD_BLOCK, (byte) 0);
-//            });
-//        }
+        if (user.isPreviewing()) {
+            server.execute(() -> {
+                 player.networkHandler.sendPacket(
+                    new BlockUpdateS2CPacket(pos, Blocks.EMERALD_BLOCK.getDefaultState())
+                );
+            });
+        }
 
         // Add the selected location.
         selection = user.addSelection(pos);

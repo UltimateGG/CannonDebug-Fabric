@@ -25,9 +25,13 @@
 
 package org.originmc.cannondebug.cmd;
 
+import net.minecraft.block.Blocks;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.originmc.cannondebug.BlockSelection;
 import org.originmc.cannondebug.CannonDebugPlugin;
 
 public final class CmdPreview extends CommandExecutor {
@@ -41,7 +45,7 @@ public final class CmdPreview extends CommandExecutor {
         // Check if user is previewing block.
         boolean preview = !user.isPreviewing();
         if (args.length > 1) {
-            preview = Boolean.valueOf(args[1]);
+            preview = Boolean.parseBoolean(args[1]);
         }
 
         // Set the users previewing state.
@@ -57,17 +61,26 @@ public final class CmdPreview extends CommandExecutor {
     }
 
     private void previewOn() {
-//        for (BlockSelection selection : user.getSelections()) {
-//            ((Player) sender).sendBlockChange(selection.getLocation(), Material.EMERALD_BLOCK, (byte) 0);
-//        }
+        ServerPlayerEntity player = sender.getPlayer();
+        assert player != null;
+
+        for (BlockSelection selection : user.getSelections()) {
+			player.networkHandler.sendPacket(
+                new BlockUpdateS2CPacket(selection.getLocation(), Blocks.EMERALD_BLOCK.getDefaultState())
+            );
+        }
         sender.sendMessage(Text.literal("Preview mode now enabled.").formatted(Formatting.YELLOW));
     }
 
     private void previewOff() {
-//        for (BlockSelection selection : user.getSelections()) {
-//            Block block = selection.getLocation().getBlock();
-//            ((Player) sender).sendBlockChange(selection.getLocation(), block.getType(), block.getData());
-//        }
+        ServerPlayerEntity player = sender.getPlayer();
+        assert player != null;
+
+        for (BlockSelection selection : user.getSelections()) {
+            player.networkHandler.sendPacket(
+                new BlockUpdateS2CPacket(selection.getLocation(), player.getWorld().getBlockState(selection.getLocation()))
+            );
+        }
         sender.sendMessage(Text.literal("Preview mode now disabled.").formatted(Formatting.YELLOW));
     }
 

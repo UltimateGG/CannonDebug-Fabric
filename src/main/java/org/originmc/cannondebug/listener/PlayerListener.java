@@ -27,8 +27,8 @@ public class PlayerListener {
 
         ServerPlayConnectionEvents.JOIN.register(this::createUser);
         ServerPlayConnectionEvents.DISCONNECT.register(this::deleteUser);
-        UseBlockCallback.EVENT.register(this::addSelection);
-        AttackBlockCallback.EVENT.register(this::removeSelection);
+        UseBlockCallback.EVENT.register(this::onUseBlock);
+        AttackBlockCallback.EVENT.register(this::onAttackBlock);
     }
 
     public void createUser(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
@@ -39,18 +39,20 @@ public class PlayerListener {
         plugin.getUsers().remove(handler.getPlayer().getUuid());
     }
 
-    public ActionResult addSelection(PlayerEntity player, World world, Hand hand, BlockHitResult blockHitResult) {
-        if (hand != Hand.MAIN_HAND) return ActionResult.PASS;
-
-        // Do nothing if not a selectable block.
-        if (!BlockSelection.isSelectable(world.getBlockState(blockHitResult.getBlockPos()).getBlock())) return ActionResult.PASS;
-
+    public ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult blockHitResult) {
         // Do nothing if the player has no user profile attached.
         User user = plugin.getUser(player.getUuid());
         if (user == null) return ActionResult.PASS;
 
         // Do nothing if the user is not selecting.
         if (!user.isSelecting()) return ActionResult.PASS;
+
+        // Fail to prevent opening dispenser in preview mode
+        if (hand != Hand.MAIN_HAND) return ActionResult.FAIL;
+
+        // Do nothing if not a selectable block.
+        if (!BlockSelection.isSelectable(world.getBlockState(blockHitResult.getBlockPos()).getBlock()))
+            return ActionResult.PASS;
 
         BlockState block = world.getBlockState(blockHitResult.getBlockPos());
         plugin.handleSelection(user, blockHitResult.getBlockPos(), block, world.getServer());
@@ -59,7 +61,7 @@ public class PlayerListener {
         return ActionResult.SUCCESS;
     }
 
-    public ActionResult removeSelection(PlayerEntity player, World world, Hand hand, BlockPos blockPos, Direction direction) {
+    public ActionResult onAttackBlock(PlayerEntity player, World world, Hand hand, BlockPos blockPos, Direction direction) {
         if (hand != Hand.MAIN_HAND) return ActionResult.PASS;
 
         // Do nothing if not a selectable block.
