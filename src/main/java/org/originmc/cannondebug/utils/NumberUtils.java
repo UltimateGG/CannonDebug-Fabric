@@ -53,7 +53,7 @@ public final class NumberUtils {
      * @return highest value that begins with permission string.
      */
     public static int getNumericalPerm(ServerCommandSource sender, String permission) {
-        return sender.hasPermissionLevel(4) ? Integer.MAX_VALUE : 0;
+        return sender.hasPermissionLevel(4) ? 5_000 : 0;
 
        /* int value = 0;
         for (PermissionAttachmentInfo perm : permissible.getEffectivePermissions()) {

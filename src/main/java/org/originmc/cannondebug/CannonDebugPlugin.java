@@ -148,6 +148,9 @@ public final class CannonDebugPlugin {
      * @param block the block to select.
      */
     public void handleSelection(User user, BlockPos pos, BlockState block, MinecraftServer server) {
+        // Do nothing if block is not selectable.
+        if (!BlockSelection.isSelectable(block.getBlock())) return;
+
         // Attempt to deselect block if it is already selected.
         BlockSelection selection = user.getSelection(pos);
         ServerPlayerEntity player = user.getPlayer();
