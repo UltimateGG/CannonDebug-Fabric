@@ -25,6 +25,7 @@
 
 package org.originmc.cannondebug.cmd;
 
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -59,7 +60,7 @@ public abstract class CommandExecutor {
      */
     public boolean execute() {
         // Do nothing if the sender does not have permission.
-        if (!sender.hasPermissionLevel(4/*permission*/)) { // For now just OPs
+        if (!Permissions.check(sender, permission, 4)) {
             sender.sendMessage(Text.literal("You do not have permission.").formatted(Formatting.RED));
             return true;
         }
