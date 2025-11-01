@@ -41,6 +41,7 @@ import net.minecraft.util.math.BlockPos;
 import org.originmc.cannondebug.cmd.CommandType;
 import org.originmc.cannondebug.listener.PlayerListener;
 import org.originmc.cannondebug.listener.WorldListener;
+import org.originmc.cannondebug.utils.BrigadierUtils;
 
 import java.util.*;
 
@@ -83,28 +84,19 @@ public final class CannonDebugPlugin {
         ServerTickEvents.END_SERVER_TICK.register(server -> onServerTick());
 
         CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
-            dispatcher.register(
-                CommandManager.literal("c")
-                    .executes(ctx -> runLegacyCommand(ctx.getSource(), "c", new String[0]))
-                    .then(CommandManager.argument("args", StringArgumentType.greedyString())
-                        .executes(ctx -> {
-                            String allArgs = StringArgumentType.getString(ctx, "args");
-                            String[] splitArgs = allArgs.split(" ");
-                            return runLegacyCommand(ctx.getSource(), "c", splitArgs);
-                        })
-                    )
-            );
-            dispatcher.register(
-                CommandManager.literal("cannondebug")
-                    .executes(ctx -> runLegacyCommand(ctx.getSource(), "c", new String[0]))
-                    .then(CommandManager.argument("args", StringArgumentType.greedyString())
-                        .executes(ctx -> {
-                            String allArgs = StringArgumentType.getString(ctx, "args");
-                            String[] splitArgs = allArgs.split(" ");
-                            return runLegacyCommand(ctx.getSource(), "c", splitArgs);
-                        })
-                    )
-            );
+            var rootCommand = CommandManager.literal("cannondebug")
+                .executes(ctx -> runLegacyCommand(ctx.getSource(), "c", new String[0]))
+                .then(CommandManager.argument("args", StringArgumentType.greedyString())
+                    .executes(ctx -> {
+                        String allArgs = StringArgumentType.getString(ctx, "args");
+                        String[] splitArgs = allArgs.split(" ");
+                        return runLegacyCommand(ctx.getSource(), "c", splitArgs);
+                    })
+                )
+                .build();
+
+            dispatcher.getRoot().addChild(rootCommand);
+            dispatcher.getRoot().addChild(BrigadierUtils.buildRedirect("c", rootCommand));
         }));
     }
 
