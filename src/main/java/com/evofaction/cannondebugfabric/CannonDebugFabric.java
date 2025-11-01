@@ -1,4 +1,4 @@
-package me.ultimate.cannondebugfabric;
+package com.evofaction.cannondebugfabric;
 
 import net.fabricmc.api.ModInitializer;
 import org.originmc.cannondebug.CannonDebugPlugin;
