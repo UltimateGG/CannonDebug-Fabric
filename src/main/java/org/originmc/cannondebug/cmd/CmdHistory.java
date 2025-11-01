@@ -32,7 +32,7 @@ import org.originmc.cannondebug.CannonDebugPlugin;
 public final class CmdHistory extends CommandExecutor {
 
     public CmdHistory(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
-        super(plugin, sender, args, permission);
+        super(plugin, sender, args, null);
     }
 
     @Override

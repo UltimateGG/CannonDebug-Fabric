@@ -46,7 +46,6 @@ Fabric permissions API supported.
 |--------------------------|-----------------------------------------------------|
 | cannondebug.clear        | Clear either history or selections                  |
 | cannondebug.help         | View the default help pages                         |
-| cannondebug.history      | Core node to access the history command             |
 | cannondebug.history.all  | View latest history for all profiled entities       |
 | cannondebug.history.help | View the history help pages                         |
 | cannondebug.history.id   | View latest history for specific entity             |
