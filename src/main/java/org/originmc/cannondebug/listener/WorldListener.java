@@ -31,7 +31,7 @@ public class WorldListener {
             protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 ServerWorld world = pointer.getWorld();
                 BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-                TntEntity tntEntity = new TntEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
+                TntEntity tntEntity = new TntEntity(world, (double) blockPos.getX() + 0.5, blockPos.getY(), (double) blockPos.getZ() + 0.5, null);
                 onTNTDispensed(pointer.getPos(), tntEntity);
                 world.spawnEntity(tntEntity);
                 world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);

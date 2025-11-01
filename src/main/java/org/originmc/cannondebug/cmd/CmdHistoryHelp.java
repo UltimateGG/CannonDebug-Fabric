@@ -31,23 +31,24 @@ import net.minecraft.util.Formatting;
 import org.originmc.cannondebug.CannonDebugPlugin;
 import org.originmc.cannondebug.FancyPager;
 
+
 public final class CmdHistoryHelp extends CommandExecutor {
 
     private static final FancyPager HELP_PAGER = new FancyPager(
-            "Help for command \"/c h\"",
-            Text.literal("/c h a,all ").formatted(Formatting.AQUA)
-                    .append(Text.literal("Prints all up to date profiling history.").formatted(Formatting.YELLOW)),
+        "Help for command \"/c h\"",
+        Text.literal("/c h a,all ").formatted(Formatting.AQUA)
+            .append(Text.literal("Prints all up to date profiling history.").formatted(Formatting.YELLOW)),
 
-            Text.literal("/c h ?,help ").formatted(Formatting.AQUA)
-                    .append(Text.literal("Displays this plugin's history help page.").formatted(Formatting.YELLOW)),
+        Text.literal("/c h ?,help ").formatted(Formatting.AQUA)
+            .append(Text.literal("Displays this plugin's history help page.").formatted(Formatting.YELLOW)),
 
-            Text.literal("/c h i,id ").formatted(Formatting.AQUA)
-                    .append(Text.literal("[id] ").formatted(Formatting.DARK_AQUA))
-                    .append(Text.literal("View all history for an entity id.").formatted(Formatting.YELLOW)),
+        Text.literal("/c h i,id ").formatted(Formatting.AQUA)
+            .append(Text.literal("[id] ").formatted(Formatting.DARK_AQUA))
+            .append(Text.literal("View all history for an entity id.").formatted(Formatting.YELLOW)),
 
-            Text.literal("/c h t,tick ").formatted(Formatting.AQUA)
-                    .append(Text.literal("[tick] ").formatted(Formatting.DARK_AQUA))
-                    .append(Text.literal("View all history in a server tick.").formatted(Formatting.YELLOW))
+        Text.literal("/c h t,tick ").formatted(Formatting.AQUA)
+            .append(Text.literal("[tick] ").formatted(Formatting.DARK_AQUA))
+            .append(Text.literal("View all history in a server tick.").formatted(Formatting.YELLOW))
     );
 
     public CmdHistoryHelp(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {

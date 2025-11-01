@@ -1,6 +1,5 @@
 package org.originmc.cannondebug.listener;
 
-import org.originmc.cannondebug.BlockSelection;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -15,8 +14,10 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.originmc.cannondebug.BlockSelection;
 import org.originmc.cannondebug.CannonDebugPlugin;
 import org.originmc.cannondebug.User;
+
 
 public class PlayerListener {
 

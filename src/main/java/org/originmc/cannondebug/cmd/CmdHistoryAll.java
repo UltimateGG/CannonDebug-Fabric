@@ -26,15 +26,15 @@
 package org.originmc.cannondebug.cmd;
 
 import net.minecraft.server.command.ServerCommandSource;
-import org.originmc.cannondebug.BlockSelection;
-import org.originmc.cannondebug.CannonDebugPlugin;
-import org.originmc.cannondebug.EntityTracker;
-import org.originmc.cannondebug.FancyPager;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
+import org.originmc.cannondebug.BlockSelection;
+import org.originmc.cannondebug.CannonDebugPlugin;
+import org.originmc.cannondebug.EntityTracker;
+import org.originmc.cannondebug.FancyPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,52 +65,52 @@ public final class CmdHistoryAll extends CommandExecutor {
 
             // === Build hover tooltip ===
             Text tooltip = Text.empty()
-                    .append(Text.literal("Click for all history on this ID.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
-                    .append(Text.literal("Spawned tick: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(String.valueOf(tracker.getSpawnTick())).formatted(Formatting.AQUA))
-                    .append(Text.literal("\nDeath tick: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(
-                            tracker.getDeathTick() == -1 ? "Still alive" : String.valueOf(tracker.getDeathTick())
-                    ).formatted(Formatting.RED))
-                    .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
-                    .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal((int)initial.getX() + " " + (int)initial.getY() + " " + (int)initial.getZ())
-                            .formatted(Formatting.GRAY));
+                .append(Text.literal("Click for all history on this ID.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
+                .append(Text.literal("Spawned tick: ").formatted(Formatting.YELLOW))
+                .append(Text.literal(String.valueOf(tracker.getSpawnTick())).formatted(Formatting.AQUA))
+                .append(Text.literal("\nDeath tick: ").formatted(Formatting.YELLOW))
+                .append(Text.literal(
+                    tracker.getDeathTick() == -1 ? "Still alive" : String.valueOf(tracker.getDeathTick())
+                ).formatted(Formatting.RED))
+                .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
+                .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
+                .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
+                .append(Text.literal((int) initial.getX() + " " + (int) initial.getY() + " " + (int) initial.getZ())
+                    .formatted(Formatting.GRAY));
 
             Text tpTooltip = Text.literal("Click to teleport to location.").formatted(Formatting.DARK_AQUA, Formatting.BOLD);
 
             // === Build main clickable line ===
             Text line = Text.literal("ID: " + selection.getId() + " ")
-                    .formatted(Formatting.GRAY)
-                    .styled(s -> s
-                            .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug h i " + selection.getId()))
-                            .withHoverEvent(new HoverEvent(SHOW_TEXT, tooltip))
-                    )
+                .formatted(Formatting.GRAY)
+                .styled(s -> s
+                    .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug h i " + selection.getId()))
+                    .withHoverEvent(new HoverEvent(SHOW_TEXT, tooltip))
+                )
 
-                    .append(
-                            Text.empty()
-                            // Entity name
-                            .append(tracker.getEntityType().getName().copy()
-                                    .formatted(Formatting.YELLOW))
+                .append(
+                    Text.empty()
+                        // Entity name
+                        .append(tracker.getEntityType().getName().copy()
+                            .formatted(Formatting.YELLOW))
 
-                            // Separator
-                            .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
+                        // Separator
+                        .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
 
-                            // Label
-                            .append(
-                                Text.literal("Last location: ").formatted(Formatting.WHITE)
+                        // Label
+                        .append(
+                            Text.literal("Last location: ").formatted(Formatting.WHITE)
 
                                 // Coordinates
                                 .append(
-                                    Text.literal((int)latest.getX() + " " + (int)latest.getY() + " " + (int)latest.getZ())
-                                    .formatted(Formatting.RED)
+                                    Text.literal((int) latest.getX() + " " + (int) latest.getY() + " " + (int) latest.getZ())
+                                        .formatted(Formatting.RED)
                                 ).styled(s -> s
                                     .withHoverEvent(new HoverEvent(SHOW_TEXT, tpTooltip))
                                     .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug tp " + selection.getId() + " " + latestTick))
                                 )
-                            )
-                    );
+                        )
+                );
 
             lines.add(line);
         }

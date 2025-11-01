@@ -27,10 +27,10 @@ package org.originmc.cannondebug.cmd;
 
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.originmc.cannondebug.CannonDebugPlugin;
-import net.minecraft.server.command.ServerCommandSource;
 
 
 public final class CmdRegion extends CommandExecutor {

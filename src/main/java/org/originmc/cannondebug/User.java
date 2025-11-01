@@ -25,10 +25,10 @@
 
 package org.originmc.cannondebug;
 
-import java.util.ArrayList;
-
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.ArrayList;
 
 
 public final class User {

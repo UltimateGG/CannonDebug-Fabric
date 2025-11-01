@@ -25,12 +25,13 @@
 
 package org.originmc.cannondebug;
 
-import java.util.ArrayList;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.ArrayList;
+
 
 public final class EntityTracker {
     private final EntityType<?> entityType;

@@ -32,6 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public enum CommandType {
 
     CLEAR(CmdClear.class, new String[]{"clear", "c"}),
@@ -98,9 +99,10 @@ public enum CommandType {
     public static CommandExecutor newInstance(CommandType commandType, CannonDebugPlugin plugin, ServerCommandSource sender, String[] args) {
         try {
             return commandType.commandExecutor
-                    .getConstructor(CannonDebugPlugin.class, ServerCommandSource.class, String[].class, String.class)
-                    .newInstance(plugin, sender, args, commandType.permission);
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                .getConstructor(CannonDebugPlugin.class, ServerCommandSource.class, String[].class, String.class)
+                .newInstance(plugin, sender, args, commandType.permission);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

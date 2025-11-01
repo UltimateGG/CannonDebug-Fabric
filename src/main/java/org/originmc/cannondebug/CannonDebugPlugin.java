@@ -42,12 +42,8 @@ import org.originmc.cannondebug.cmd.CommandType;
 import org.originmc.cannondebug.listener.PlayerListener;
 import org.originmc.cannondebug.listener.WorldListener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+
 
 public final class CannonDebugPlugin {
     // Arbitrary and most users will never bump into these
@@ -88,26 +84,26 @@ public final class CannonDebugPlugin {
 
         CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
             dispatcher.register(
-                    CommandManager.literal("c")
-                            .executes(ctx -> runLegacyCommand(ctx.getSource(), "c", new String[0]))
-                            .then(CommandManager.argument("args", StringArgumentType.greedyString())
-                                    .executes(ctx -> {
-                                        String allArgs = StringArgumentType.getString(ctx, "args");
-                                        String[] splitArgs = allArgs.split(" ");
-                                        return runLegacyCommand(ctx.getSource(), "c", splitArgs);
-                                    })
-                            )
+                CommandManager.literal("c")
+                    .executes(ctx -> runLegacyCommand(ctx.getSource(), "c", new String[0]))
+                    .then(CommandManager.argument("args", StringArgumentType.greedyString())
+                        .executes(ctx -> {
+                            String allArgs = StringArgumentType.getString(ctx, "args");
+                            String[] splitArgs = allArgs.split(" ");
+                            return runLegacyCommand(ctx.getSource(), "c", splitArgs);
+                        })
+                    )
             );
             dispatcher.register(
-                    CommandManager.literal("cannondebug")
-                            .executes(ctx -> runLegacyCommand(ctx.getSource(), "c", new String[0]))
-                            .then(CommandManager.argument("args", StringArgumentType.greedyString())
-                                    .executes(ctx -> {
-                                        String allArgs = StringArgumentType.getString(ctx, "args");
-                                        String[] splitArgs = allArgs.split(" ");
-                                        return runLegacyCommand(ctx.getSource(), "c", splitArgs);
-                                    })
-                            )
+                CommandManager.literal("cannondebug")
+                    .executes(ctx -> runLegacyCommand(ctx.getSource(), "c", new String[0]))
+                    .then(CommandManager.argument("args", StringArgumentType.greedyString())
+                        .executes(ctx -> {
+                            String allArgs = StringArgumentType.getString(ctx, "args");
+                            String[] splitArgs = allArgs.split(" ");
+                            return runLegacyCommand(ctx.getSource(), "c", splitArgs);
+                        })
+                    )
             );
         }));
     }
@@ -159,10 +155,10 @@ public final class CannonDebugPlugin {
         if (selection != null) {
             // Inform the player.
             player.sendMessage(Text.empty()
-                    .append(Text.literal("REM ").formatted(Formatting.RED, Formatting.BOLD))
-                    .append(Text.literal(block.getBlock().getName().getString() + " @ ").formatted(Formatting.WHITE))
-                    .append(Text.literal(pos.getX() + " " + pos.getY() + " " + pos.getZ() + " ").formatted(Formatting.WHITE))
-                    .append(Text.literal("ID: " + selection.getId()).formatted(Formatting.GRAY))
+                .append(Text.literal("REM ").formatted(Formatting.RED, Formatting.BOLD))
+                .append(Text.literal(block.getBlock().getName().getString() + " @ ").formatted(Formatting.WHITE))
+                .append(Text.literal(pos.getX() + " " + pos.getY() + " " + pos.getZ() + " ").formatted(Formatting.WHITE))
+                .append(Text.literal("ID: " + selection.getId()).formatted(Formatting.GRAY))
             );
 
             // Remove the clicked location.
@@ -183,9 +179,9 @@ public final class CannonDebugPlugin {
         // Do nothing if the user has too many selections.
         if (user.getSelections().size() >= MAX_SELECTIONS) {
             player.sendMessage(
-                    Text.literal("You have too many selections! ")
-                            .formatted(Formatting.RED)
-                            .append(Text.literal("(Max = " + MAX_SELECTIONS + ")").formatted(Formatting.GRAY))
+                Text.literal("You have too many selections! ")
+                    .formatted(Formatting.RED)
+                    .append(Text.literal("(Max = " + MAX_SELECTIONS + ")").formatted(Formatting.GRAY))
             );
             return;
         }
@@ -193,7 +189,7 @@ public final class CannonDebugPlugin {
         // Update users preview.
         if (user.isPreviewing()) {
             server.execute(() -> {
-                 player.networkHandler.sendPacket(
+                player.networkHandler.sendPacket(
                     new BlockUpdateS2CPacket(pos, Blocks.EMERALD_BLOCK.getDefaultState())
                 );
             });
@@ -204,10 +200,10 @@ public final class CannonDebugPlugin {
 
         // Inform the player.
         player.sendMessage(Text.empty()
-                .append(Text.literal("ADD ").formatted(Formatting.GREEN, Formatting.BOLD))
-                .append(Text.literal(block.getBlock().getName().getString() + " @ ").formatted(Formatting.WHITE))
-                .append(Text.literal(pos.getX() + " " + pos.getY() + " " + pos.getZ() + " ").formatted(Formatting.WHITE))
-                .append(Text.literal("ID: " + selection.getId()).formatted(Formatting.GRAY))
+            .append(Text.literal("ADD ").formatted(Formatting.GREEN, Formatting.BOLD))
+            .append(Text.literal(block.getBlock().getName().getString() + " @ ").formatted(Formatting.WHITE))
+            .append(Text.literal(pos.getX() + " " + pos.getY() + " " + pos.getZ() + " ").formatted(Formatting.WHITE))
+            .append(Text.literal("ID: " + selection.getId()).formatted(Formatting.GRAY))
         );
     }
 

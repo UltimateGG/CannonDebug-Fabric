@@ -28,6 +28,7 @@ package org.originmc.cannondebug.cmd;
 import net.minecraft.server.command.ServerCommandSource;
 import org.originmc.cannondebug.CannonDebugPlugin;
 
+
 public final class CmdHistory extends CommandExecutor {
 
     public CmdHistory(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {

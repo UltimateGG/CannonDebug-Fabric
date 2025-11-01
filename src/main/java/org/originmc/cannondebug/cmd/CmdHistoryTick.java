@@ -76,56 +76,56 @@ public final class CmdHistoryTick extends CommandExecutor {
             Vec3d velocity = tracker.getVelocityHistory().get(relativeTick);
             // Tooltip for ID info
             Text idTooltip = Text.empty()
-                    .append(Text.literal("Click for all history on this ID.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
-                    .append(Text.literal("Spawned tick: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(String.valueOf(tracker.getSpawnTick())).formatted(Formatting.AQUA))
-                    .append(Text.literal("\nDeath tick: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(tracker.getDeathTick() == -1 ? "Still alive" : String.valueOf(tracker.getDeathTick()))
-                            .formatted(Formatting.RED))
-                    .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
-                    .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal((int)initial.getX() + " " + (int)initial.getY() + " " + (int)initial.getZ())
-                            .formatted(Formatting.GRAY));
+                .append(Text.literal("Click for all history on this ID.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
+                .append(Text.literal("Spawned tick: ").formatted(Formatting.YELLOW))
+                .append(Text.literal(String.valueOf(tracker.getSpawnTick())).formatted(Formatting.AQUA))
+                .append(Text.literal("\nDeath tick: ").formatted(Formatting.YELLOW))
+                .append(Text.literal(tracker.getDeathTick() == -1 ? "Still alive" : String.valueOf(tracker.getDeathTick()))
+                    .formatted(Formatting.RED))
+                .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
+                .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
+                .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
+                .append(Text.literal((int) initial.getX() + " " + (int) initial.getY() + " " + (int) initial.getZ())
+                    .formatted(Formatting.GRAY));
 
             // Tooltip for location/velocity
             Text hoverLocVel = Text.empty()
-                    .append(Text.literal("Click to teleport to location.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
-                    .append(Text.literal("LOCATION\n").formatted(Formatting.YELLOW, Formatting.BOLD))
-                    .append(Text.literal("X: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(location.getX())).formatted(Formatting.RED))
-                    .append(Text.literal("\nY: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(location.getY())).formatted(Formatting.RED))
-                    .append(Text.literal("\nZ: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(location.getZ())).formatted(Formatting.RED))
-                    .append(Text.literal("\n\nVELOCITY\n").formatted(Formatting.YELLOW, Formatting.BOLD))
-                    .append(Text.literal("X: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(velocity.getX())).formatted(Formatting.RED))
-                    .append(Text.literal("\nY: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(velocity.getY())).formatted(Formatting.RED))
-                    .append(Text.literal("\nZ: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(velocity.getZ())).formatted(Formatting.RED));
+                .append(Text.literal("Click to teleport to location.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
+                .append(Text.literal("LOCATION\n").formatted(Formatting.YELLOW, Formatting.BOLD))
+                .append(Text.literal("X: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(location.getX())).formatted(Formatting.RED))
+                .append(Text.literal("\nY: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(location.getY())).formatted(Formatting.RED))
+                .append(Text.literal("\nZ: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(location.getZ())).formatted(Formatting.RED))
+                .append(Text.literal("\n\nVELOCITY\n").formatted(Formatting.YELLOW, Formatting.BOLD))
+                .append(Text.literal("X: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(velocity.getX())).formatted(Formatting.RED))
+                .append(Text.literal("\nY: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(velocity.getY())).formatted(Formatting.RED))
+                .append(Text.literal("\nZ: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(velocity.getZ())).formatted(Formatting.RED));
 
             // The main clickable message
             Text line = Text.empty()
-                    .append(Text.literal("ID: " + selection.getId() + " ")
-                            .formatted(Formatting.GRAY)
-                            .styled(s -> s
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cannondebug h i " + selection.getId()))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, idTooltip))
+                .append(Text.literal("ID: " + selection.getId() + " ")
+                    .formatted(Formatting.GRAY)
+                    .styled(s -> s
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cannondebug h i " + selection.getId()))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, idTooltip))
                     ))
-                    .append(
-                            Text.empty()
-                            .append(tracker.getEntityType().getName().copy().formatted(Formatting.YELLOW))
-                            .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
-                            .append(Text.literal("Hover for location and velocity")
-                                    .formatted(Formatting.WHITE)
-                            )
-                            .styled(s -> s
-                                    .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug tp " + selection.getId() + " " + relativeTick))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverLocVel))
-                            )
-                    );
+                .append(
+                    Text.empty()
+                        .append(tracker.getEntityType().getName().copy().formatted(Formatting.YELLOW))
+                        .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
+                        .append(Text.literal("Hover for location and velocity")
+                            .formatted(Formatting.WHITE)
+                        )
+                        .styled(s -> s
+                            .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug tp " + selection.getId() + " " + relativeTick))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverLocVel))
+                        )
+                );
 
             lines.add(line);
         }

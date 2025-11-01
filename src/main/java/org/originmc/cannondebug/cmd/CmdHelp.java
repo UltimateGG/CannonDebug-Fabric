@@ -25,52 +25,53 @@
 
 package org.originmc.cannondebug.cmd;
 
-import org.originmc.cannondebug.FancyPager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.originmc.cannondebug.CannonDebugPlugin;
+import org.originmc.cannondebug.FancyPager;
+
 
 public final class CmdHelp extends CommandExecutor {
 
     private static final FancyPager HELP_PAGER = new FancyPager(
-            "Help for command \"/c\"",
-            Text.literal("/c c,clear ").formatted(Formatting.AQUA)
-                    .append(Text.literal("[history,h,selections,s] ").formatted(Formatting.DARK_AQUA))
-                    .append(Text.literal("Clear history or selections.").formatted(Formatting.YELLOW)),
+        "Help for command \"/c\"",
+        Text.literal("/c c,clear ").formatted(Formatting.AQUA)
+            .append(Text.literal("[history,h,selections,s] ").formatted(Formatting.DARK_AQUA))
+            .append(Text.literal("Clear history or selections.").formatted(Formatting.YELLOW)),
 
-            Text.literal("/c ?,help ").formatted(Formatting.AQUA)
-                    .append(Text.literal("Displays this plugin's main help page.").formatted(Formatting.YELLOW)),
+        Text.literal("/c ?,help ").formatted(Formatting.AQUA)
+            .append(Text.literal("Displays this plugin's main help page.").formatted(Formatting.YELLOW)),
 
-            Text.literal("/c h,l,history,lookup ").formatted(Formatting.AQUA)
-                    .append(Text.literal("[?,params] ").formatted(Formatting.DARK_AQUA))
-                    .append(Text.literal("Lists latest profiling history.").formatted(Formatting.YELLOW)),
+        Text.literal("/c h,l,history,lookup ").formatted(Formatting.AQUA)
+            .append(Text.literal("[?,params] ").formatted(Formatting.DARK_AQUA))
+            .append(Text.literal("Lists latest profiling history.").formatted(Formatting.YELLOW)),
 
-            Text.literal("/c p,page ").formatted(Formatting.AQUA)
-                    .append(Text.literal("[page] ").formatted(Formatting.DARK_AQUA))
-                    .append(Text.literal("Go to specific page for current pager.").formatted(Formatting.YELLOW)),
+        Text.literal("/c p,page ").formatted(Formatting.AQUA)
+            .append(Text.literal("[page] ").formatted(Formatting.DARK_AQUA))
+            .append(Text.literal("Go to specific page for current pager.").formatted(Formatting.YELLOW)),
 
-            Text.literal("/c v,pre,view,preview ").formatted(Formatting.AQUA)
-                    .append(Text.literal("Preview all selected blocks.").formatted(Formatting.YELLOW)),
+        Text.literal("/c v,pre,view,preview ").formatted(Formatting.AQUA)
+            .append(Text.literal("Preview all selected blocks.").formatted(Formatting.YELLOW)),
 
-            Text.literal("/c r,region ").formatted(Formatting.AQUA)
-                    .append(Text.literal("Select all available blocks in WorldEdit region.").formatted(Formatting.YELLOW)),
+        Text.literal("/c r,region ").formatted(Formatting.AQUA)
+            .append(Text.literal("Select all available blocks in WorldEdit region.").formatted(Formatting.YELLOW)),
 
-            Text.literal("/c s,select ").formatted(Formatting.AQUA)
-                    .append(Text.literal("Bind block selector tool to hand.").formatted(Formatting.YELLOW)),
+        Text.literal("/c s,select ").formatted(Formatting.AQUA)
+            .append(Text.literal("Bind block selector tool to hand.").formatted(Formatting.YELLOW)),
 
-            Text.literal("/c tp,teleport ").formatted(Formatting.AQUA)
-                    .append(Text.literal("[id] [tick] ").formatted(Formatting.DARK_AQUA))
-                    .append(Text.literal("Teleport to an entity at a point of time.").formatted(Formatting.YELLOW)),
+        Text.literal("/c tp,teleport ").formatted(Formatting.AQUA)
+            .append(Text.literal("[id] [tick] ").formatted(Formatting.DARK_AQUA))
+            .append(Text.literal("Teleport to an entity at a point of time.").formatted(Formatting.YELLOW)),
 
-            Text.empty(),
-            Text.literal("This mod provides an easy way to profile cannons.").formatted(Formatting.GREEN),
-            Text.empty(),
-            Text.literal("It lets you select sand or dispensers around your cannon. The falling or fired entities are profiled each tick.")
-                    .formatted(Formatting.GREEN),
-            Text.empty(),
-            Text.literal("All data like velocities and locations can be accessed via lookup commands. The results are indexed for clarity.")
-                    .formatted(Formatting.GREEN)
+        Text.empty(),
+        Text.literal("This mod provides an easy way to profile cannons.").formatted(Formatting.GREEN),
+        Text.empty(),
+        Text.literal("It lets you select sand or dispensers around your cannon. The falling or fired entities are profiled each tick.")
+            .formatted(Formatting.GREEN),
+        Text.empty(),
+        Text.literal("All data like velocities and locations can be accessed via lookup commands. The results are indexed for clarity.")
+            .formatted(Formatting.GREEN)
     );
 
     public CmdHelp(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {

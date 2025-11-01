@@ -30,6 +30,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.originmc.cannondebug.CannonDebugPlugin;
 
+
 public final class CmdSelect extends CommandExecutor {
 
     public CmdSelect(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {

@@ -43,6 +43,7 @@ import java.util.List;
 import static net.minecraft.text.ClickEvent.Action.RUN_COMMAND;
 import static net.minecraft.text.HoverEvent.Action.SHOW_TEXT;
 
+
 public final class CmdHistoryID extends CommandExecutor {
 
     public CmdHistoryID(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
@@ -80,73 +81,72 @@ public final class CmdHistoryID extends CommandExecutor {
 
             // --- Build hover tooltip for tick info ---
             Text tickTooltip = Text.empty()
-                    .append(Text.literal("Click for all history on this tick.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
-                    .append(Text.literal("Server tick: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(String.valueOf(tracker.getSpawnTick() + i)).formatted(Formatting.LIGHT_PURPLE))
-                    .append(Text.literal("\nSpawned tick: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(String.valueOf(tracker.getSpawnTick())).formatted(Formatting.AQUA))
-                    .append(Text.literal("\nDeath tick: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(tracker.getDeathTick() == -1 ? "Still alive" : String.valueOf(tracker.getDeathTick()))
-                            .formatted(Formatting.RED))
-                    .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
-                    .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
-                    .append(Text.literal((int)initial.getX() + " " + (int)initial.getY() + " " + (int)initial.getZ())
-                            .formatted(Formatting.GRAY));
+                .append(Text.literal("Click for all history on this tick.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
+                .append(Text.literal("Server tick: ").formatted(Formatting.YELLOW))
+                .append(Text.literal(String.valueOf(tracker.getSpawnTick() + i)).formatted(Formatting.LIGHT_PURPLE))
+                .append(Text.literal("\nSpawned tick: ").formatted(Formatting.YELLOW))
+                .append(Text.literal(String.valueOf(tracker.getSpawnTick())).formatted(Formatting.AQUA))
+                .append(Text.literal("\nDeath tick: ").formatted(Formatting.YELLOW))
+                .append(Text.literal(tracker.getDeathTick() == -1 ? "Still alive" : String.valueOf(tracker.getDeathTick()))
+                    .formatted(Formatting.RED))
+                .append(Text.literal("\nCached tick: ").formatted(Formatting.YELLOW))
+                .append(Text.literal(String.valueOf(plugin.getCurrentTick())).formatted(Formatting.GREEN))
+                .append(Text.literal("\nInitial Location: ").formatted(Formatting.YELLOW))
+                .append(Text.literal((int) initial.getX() + " " + (int) initial.getY() + " " + (int) initial.getZ())
+                    .formatted(Formatting.GRAY));
 
             // --- Build hover tooltip for location + velocity ---
             Text hoverLocVel = Text.empty()
-                    .append(Text.literal("Tick " + i + "\n").formatted(Formatting.WHITE, Formatting.BOLD))
-                    .append(Text.literal("Click to teleport to location.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
-                    .append(Text.literal("LOCATION\n").formatted(Formatting.YELLOW, Formatting.BOLD))
-                    .append(Text.literal("X: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(location.getX())).formatted(Formatting.RED))
-                    .append(Text.literal("\nY: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(location.getY())).formatted(Formatting.RED))
-                    .append(Text.literal("\nZ: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(location.getZ())).formatted(Formatting.RED))
-                    .append(Text.literal("\n\nVELOCITY\n").formatted(Formatting.YELLOW, Formatting.BOLD))
-                    .append(Text.literal("X: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(velocity.getX())).formatted(Formatting.RED))
-                    .append(Text.literal("\nY: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(velocity.getY())).formatted(Formatting.RED))
-                    .append(Text.literal("\nZ: ").formatted(Formatting.WHITE))
-                    .append(Text.literal(String.valueOf(velocity.getZ())).formatted(Formatting.RED));
+                .append(Text.literal("Tick " + i + "\n").formatted(Formatting.WHITE, Formatting.BOLD))
+                .append(Text.literal("Click to teleport to location.\n").formatted(Formatting.DARK_AQUA, Formatting.BOLD))
+                .append(Text.literal("LOCATION\n").formatted(Formatting.YELLOW, Formatting.BOLD))
+                .append(Text.literal("X: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(location.getX())).formatted(Formatting.RED))
+                .append(Text.literal("\nY: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(location.getY())).formatted(Formatting.RED))
+                .append(Text.literal("\nZ: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(location.getZ())).formatted(Formatting.RED))
+                .append(Text.literal("\n\nVELOCITY\n").formatted(Formatting.YELLOW, Formatting.BOLD))
+                .append(Text.literal("X: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(velocity.getX())).formatted(Formatting.RED))
+                .append(Text.literal("\nY: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(velocity.getY())).formatted(Formatting.RED))
+                .append(Text.literal("\nZ: ").formatted(Formatting.WHITE))
+                .append(Text.literal(String.valueOf(velocity.getZ())).formatted(Formatting.RED));
 
             // --- Build main interactive message ---
             int finalI = i;
             Text line = Text.empty()
-                    .append(Text.literal("Tick: " + i + " ")
-                            .formatted(Formatting.GRAY)
-                            .styled(s -> s
-                                    .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug h t " + (tracker.getSpawnTick() + finalI)))
-                                    .withHoverEvent(new HoverEvent(SHOW_TEXT, tickTooltip))
+                .append(Text.literal("Tick: " + i + " ")
+                    .formatted(Formatting.GRAY)
+                    .styled(s -> s
+                        .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug h t " + (tracker.getSpawnTick() + finalI)))
+                        .withHoverEvent(new HoverEvent(SHOW_TEXT, tickTooltip))
                     ))
 
-                    // Label for hoverable section
-                    .append(
-                            Text.empty()
-                            // Entity name
-                            .append(tracker.getEntityType().getName().copy().formatted(Formatting.YELLOW))
+                // Label for hoverable section
+                .append(
+                    Text.empty()
+                        // Entity name
+                        .append(tracker.getEntityType().getName().copy().formatted(Formatting.YELLOW))
 
-                            // Separator
-                            .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
-                            .append(
-                                Text.literal("Hover for location and velocity")
+                        // Separator
+                        .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
+                        .append(
+                            Text.literal("Hover for location and velocity")
                                 .formatted(Formatting.WHITE)
-                            )
-                            .styled(s -> s
-                                    .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug tp " + id + " " + finalI))
-                                    .withHoverEvent(new HoverEvent(SHOW_TEXT, hoverLocVel))
-                            ))
-                    ;
+                        )
+                        .styled(s -> s
+                            .withClickEvent(new ClickEvent(RUN_COMMAND, "/cannondebug tp " + id + " " + finalI))
+                            .withHoverEvent(new HoverEvent(SHOW_TEXT, hoverLocVel))
+                        ));
 
             lines.add(line);
         }
 
         FancyPager pager = new FancyPager(
-                "History for selection ID: " + id,
-                lines.toArray(Text[]::new)
+            "History for selection ID: " + id,
+            lines.toArray(Text[]::new)
         );
         send(pager, 0);
         return true;

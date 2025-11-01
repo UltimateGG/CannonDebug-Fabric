@@ -34,6 +34,7 @@ import net.minecraft.util.Formatting;
 import org.originmc.cannondebug.BlockSelection;
 import org.originmc.cannondebug.CannonDebugPlugin;
 
+
 public final class CmdPreview extends CommandExecutor {
 
     public CmdPreview(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {
@@ -65,7 +66,7 @@ public final class CmdPreview extends CommandExecutor {
         assert player != null;
 
         for (BlockSelection selection : user.getSelections()) {
-			player.networkHandler.sendPacket(
+            player.networkHandler.sendPacket(
                 new BlockUpdateS2CPacket(selection.getLocation(), Blocks.EMERALD_BLOCK.getDefaultState())
             );
         }

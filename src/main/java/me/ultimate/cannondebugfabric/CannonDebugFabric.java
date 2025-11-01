@@ -1,12 +1,12 @@
 package me.ultimate.cannondebugfabric;
 
-import org.originmc.cannondebug.CannonDebugPlugin;
 import net.fabricmc.api.ModInitializer;
+import org.originmc.cannondebug.CannonDebugPlugin;
 
 
 public class CannonDebugFabric implements ModInitializer {
-	@Override
-	public void onInitialize() {
-		new CannonDebugPlugin().init();
-	}
+    @Override
+    public void onInitialize() {
+        new CannonDebugPlugin().init();
+    }
 }

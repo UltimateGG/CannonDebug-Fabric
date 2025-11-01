@@ -30,6 +30,7 @@ import org.originmc.cannondebug.CannonDebugPlugin;
 import org.originmc.cannondebug.FancyPager;
 import org.originmc.cannondebug.utils.NumberUtils;
 
+
 public final class CmdPage extends CommandExecutor {
 
     public CmdPage(CannonDebugPlugin plugin, ServerCommandSource sender, String[] args, String permission) {

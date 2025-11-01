@@ -33,6 +33,7 @@ import org.originmc.cannondebug.CannonDebugPlugin;
 import org.originmc.cannondebug.FancyPager;
 import org.originmc.cannondebug.User;
 
+
 public abstract class CommandExecutor {
 
     public final CannonDebugPlugin plugin;
@@ -86,7 +87,7 @@ public abstract class CommandExecutor {
      * Sends command sender a fancy pager message.
      *
      * @param pager the fancy pager instance to send.
-     * @param page the page to send to the player.
+     * @param page  the page to send to the player.
      */
     public void send(FancyPager pager, int page) {
         for (Text message : pager.getPage(page)) {
@@ -103,6 +104,7 @@ public abstract class CommandExecutor {
 
     /**
      * Executes the command.
+     *
      * @return true if valid command, otherwise false.
      */
     public abstract boolean perform();

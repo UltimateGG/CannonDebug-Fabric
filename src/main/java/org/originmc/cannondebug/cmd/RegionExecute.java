@@ -33,59 +33,59 @@ import com.sk89q.worldedit.fabric.FabricAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import org.originmc.cannondebug.CannonDebugPlugin;
-import net.minecraft.server.command.ServerCommandSource;
 import org.originmc.cannondebug.User;
 
 import java.util.Objects;
 
 
 public final class RegionExecute {
-	public static boolean perform(CannonDebugPlugin plugin, User user, ServerCommandSource sender) {
-		// Do nothing if WorldEdit is not installed.
-		if (!FabricLoader.getInstance().isModLoaded("worldedit")) {
-			sender.sendMessage(Text.literal("WorldEdit was not found on this server!").formatted(Formatting.RED));
-			return true;
-		}
+    public static boolean perform(CannonDebugPlugin plugin, User user, ServerCommandSource sender) {
+        // Do nothing if WorldEdit is not installed.
+        if (!FabricLoader.getInstance().isModLoaded("worldedit")) {
+            sender.sendMessage(Text.literal("WorldEdit was not found on this server!").formatted(Formatting.RED));
+            return true;
+        }
 
-		try {
-			// Do nothing if selection is not a cuboid.
-			WorldEdit worldEdit = WorldEdit.getInstance();
-			Player wePlayer = FabricAdapter.adaptPlayer(Objects.requireNonNull(sender.getPlayer()));
-			LocalSession session = worldEdit.getSessionManager().get(wePlayer);
-			CuboidRegion selection = session.getSelection().getBoundingBox();
+        try {
+            // Do nothing if selection is not a cuboid.
+            WorldEdit worldEdit = WorldEdit.getInstance();
+            Player wePlayer = FabricAdapter.adaptPlayer(Objects.requireNonNull(sender.getPlayer()));
+            LocalSession session = worldEdit.getSessionManager().get(wePlayer);
+            CuboidRegion selection = session.getSelection().getBoundingBox();
 
-			// Do nothing if selection is too large.
-			if (selection.getVolume() > CannonDebugPlugin.MAX_WORLDEDIT_VOLUME) {
-				sender.sendMessage(
-						Text.empty()
-								.append(Text.literal("Region selected is too large! ").formatted(Formatting.RED))
-								.append(Text.literal("(Max area = " + CannonDebugPlugin.MAX_WORLDEDIT_VOLUME + " blocks)").formatted(Formatting.GRAY))
-				);
-				return true;
-			}
+            // Do nothing if selection is too large.
+            if (selection.getVolume() > CannonDebugPlugin.MAX_WORLDEDIT_VOLUME) {
+                sender.sendMessage(
+                    Text.empty()
+                        .append(Text.literal("Region selected is too large! ").formatted(Formatting.RED))
+                        .append(Text.literal("(Max area = " + CannonDebugPlugin.MAX_WORLDEDIT_VOLUME + " blocks)").formatted(Formatting.GRAY))
+                );
+                return true;
+            }
 
-			// Handle selection for all blocks within this region.
-			BlockVector3 max = selection.getMaximumPoint();
-			BlockVector3 min = selection.getMinimumPoint();
-			for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-				for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-					for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-						BlockPos pos = new BlockPos(x, y, z);
-						plugin.handleSelection(user, pos, sender.getPlayer().getWorld().getBlockState(pos), sender.getServer());
-					}
-				}
-			}
+            // Handle selection for all blocks within this region.
+            BlockVector3 max = selection.getMaximumPoint();
+            BlockVector3 min = selection.getMinimumPoint();
+            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+                for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+                    for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                        BlockPos pos = new BlockPos(x, y, z);
+                        plugin.handleSelection(user, pos, sender.getPlayer().getWorld().getBlockState(pos), sender.getServer());
+                    }
+                }
+            }
 
-			// Send complete message.
-			sender.sendMessage(Text.literal("All possible selections have been toggled.").formatted(Formatting.YELLOW));
-			return true;
-		} catch (Exception e) {
-			sender.sendMessage(Text.literal("WorldEdit selection incomplete!").formatted(Formatting.RED));
-			return true;
-		}
-	}
+            // Send complete message.
+            sender.sendMessage(Text.literal("All possible selections have been toggled.").formatted(Formatting.YELLOW));
+            return true;
+        } catch (Exception e) {
+            sender.sendMessage(Text.literal("WorldEdit selection incomplete!").formatted(Formatting.RED));
+            return true;
+        }
+    }
 }
