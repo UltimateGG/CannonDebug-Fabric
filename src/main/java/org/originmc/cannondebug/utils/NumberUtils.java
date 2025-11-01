@@ -25,8 +25,6 @@
 
 package org.originmc.cannondebug.utils;
 
-import net.minecraft.server.command.ServerCommandSource;
-
 public final class NumberUtils {
 
     /**
@@ -42,45 +40,5 @@ public final class NumberUtils {
         } catch (NumberFormatException e) {
             return 0;
         }
-    }
-
-    /**
-     * Attempts to find the highest integer based off the effective permissions
-     * of a permissible.
-     *
-     * @param sender the permissible to check for permissions.
-     * @param permission the start of the permission string.
-     * @return highest value that begins with permission string.
-     */
-    public static int getNumericalPerm(ServerCommandSource sender, String permission) {
-        return sender.hasPermissionLevel(4) ? 5_000 : 0;
-
-       /* int value = 0;
-        for (PermissionAttachmentInfo perm : permissible.getEffectivePermissions()) {
-            // Do nothing if permission does not start with called.
-            String checkPerm = perm.getPermission();
-            if (!checkPerm.startsWith(permission)) continue;
-
-            // Do nothing if permission has no third argument.
-            String[] segmented = checkPerm.split("\\.");
-            if (segmented.length != 3) continue;
-
-            // Attempt to read the next argument as an integer.
-            int comparison = 0;
-            try {
-                comparison = Integer.parseInt(segmented[2]);
-            } catch (NumberFormatException e) {
-                // Return maximum value if user has the unlimited permission.
-                if (segmented[2].equalsIgnoreCase("unlimited")) {
-                    return Integer.MAX_VALUE;
-                }
-            }
-
-            // Replace max area with higher value.
-            if (value < comparison) {
-                value = comparison;
-            }
-        }
-        return value;*/
     }
 }

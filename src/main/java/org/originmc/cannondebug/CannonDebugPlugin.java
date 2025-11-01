@@ -41,7 +41,6 @@ import net.minecraft.util.math.BlockPos;
 import org.originmc.cannondebug.cmd.CommandType;
 import org.originmc.cannondebug.listener.PlayerListener;
 import org.originmc.cannondebug.listener.WorldListener;
-import org.originmc.cannondebug.utils.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +50,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class CannonDebugPlugin {
+    // Arbitrary and most users will never bump into these
+    public static final int MAX_SELECTIONS = 300;
+    public static final int MAX_WORLDEDIT_VOLUME = 5_000;
 
     private final Map<UUID, User> users = new HashMap<>();
 
@@ -179,12 +181,11 @@ public final class CannonDebugPlugin {
         }
 
         // Do nothing if the user has too many selections.
-        int max = NumberUtils.getNumericalPerm(player.getCommandSource(), "cannondebug.maxselections.");
-        if (user.getSelections().size() >= max) {
+        if (user.getSelections().size() >= MAX_SELECTIONS) {
             player.sendMessage(
                     Text.literal("You have too many selections! ")
                             .formatted(Formatting.RED)
-                            .append(Text.literal("(Max = " + max + ")").formatted(Formatting.GRAY))
+                            .append(Text.literal("(Max = " + MAX_SELECTIONS + ")").formatted(Formatting.GRAY))
             );
             return;
         }

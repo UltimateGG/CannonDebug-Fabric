@@ -39,7 +39,6 @@ import net.minecraft.util.math.BlockPos;
 import org.originmc.cannondebug.CannonDebugPlugin;
 import net.minecraft.server.command.ServerCommandSource;
 import org.originmc.cannondebug.User;
-import org.originmc.cannondebug.utils.NumberUtils;
 
 import java.util.Objects;
 
@@ -60,12 +59,11 @@ public final class RegionExecute {
 			CuboidRegion selection = session.getSelection().getBoundingBox();
 
 			// Do nothing if selection is too large.
-			int maxArea = NumberUtils.getNumericalPerm(sender, "cannondebug.maxarea.");
-			if (selection.getVolume() > maxArea) {
+			if (selection.getVolume() > CannonDebugPlugin.MAX_WORLDEDIT_VOLUME) {
 				sender.sendMessage(
 						Text.empty()
 								.append(Text.literal("Region selected is too large! ").formatted(Formatting.RED))
-								.append(Text.literal("(Max area = " + maxArea + " blocks)").formatted(Formatting.GRAY))
+								.append(Text.literal("(Max area = " + CannonDebugPlugin.MAX_WORLDEDIT_VOLUME + " blocks)").formatted(Formatting.GRAY))
 				);
 				return true;
 			}
